@@ -23,22 +23,22 @@ async def get_all_unidades() -> list[Unidad]:
 
 async def create_unidad(unidad: Unidad) -> Unidad:
     sql = """
-        INSERT INTO GD.UNIDAD (id, id_usuario, capacitad_total, capacitad_actual, id_membresia, fecha_compra, fecha_expiracion)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO GD.UNIDAD (id_usuario, capacidad_total, capacidad_actual, id_membresia, fecha_compra, fecha_expiracion)
+        VALUES (?, ?, ?, ?, ?, ?)
     """
     params = [
-        unidad.id,
         unidad.id_usuario,
-        unidad.capacitad_total,
-        unidad.capacitad_actual,
+        unidad.capacidad_total,
+        unidad.capacidad_actual,
         unidad.id_membresia,
         unidad.fecha_compra,
         unidad.fecha_expiracion
     ]
     try:
         await execute_query_json(sql, params, needs_commit=True)
-        sql_find = "SELECT * FROM GD.UNIDAD WHERE id = ?"
-        result = await execute_query_json(sql_find, [unidad.id])
+        # Traer la unidad recién creada
+        sql_find = "SELECT TOP 1 * FROM GD.UNIDAD WHERE id_usuario = ? ORDER BY id DESC"
+        result = await execute_query_json(sql_find, [unidad.id_usuario])
         return result[0]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

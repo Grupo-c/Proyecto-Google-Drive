@@ -18,9 +18,9 @@ async def get_all_unidades_route():
 async def create_new_unidad(unidad_data: Unidad):
     return await create_unidad(unidad_data)
 
-@router.put("/{id}", tags=["Unidades"], status_code=status.HTTP_201_CREATED)
+@router.put("/{id}", tags=["Unidades"], status_code=status.HTTP_200_OK)
 async def update_unidad_route(unidad_data: Unidad, id: int):
-    unidad_data.id = id
+    unidad_data.id = id  
     return await update_unidad(unidad_data)
 
 @router.delete("/{id}", tags=["Unidades"], status_code=status.HTTP_204_NO_CONTENT)

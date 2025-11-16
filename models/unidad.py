@@ -1,34 +1,35 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import date, datetime
-import re
+from datetime import date
 
 class Unidad(BaseModel):
-    id: int = Field(
-        description = "ID de la unidad asociada"
+    id: Optional[int] = Field(
+        default=None,
+        description="ID de la unidad asociada (autogenerado)"
     )
     
     id_usuario: int = Field(
-        description = "ID del usuario que le pertenece la unidad"
+        description="ID del usuario que le pertenece la unidad"
     )
     
-    
-    capacitad_total: float = Field(
-        description = "Capacidad total de la unidad"
+    capacidad_total: float = Field(
+        description="Capacidad total de la unidad"
     )
     
-    capacitad_actual: float = Field(
-        description = "Capacidad actualmente usada en la carpeta"
+    capacidad_actual: float = Field(
+        description="Capacidad actualmente usada en la unidad"
     )
     
     id_membresia: int = Field(
-        description = "ID de la membresia que tiene la unidad"
+        description="ID de la membresía que tiene la unidad"
     )
     
-    fecha_compra: date = Field(
-        description = "Fecha en la que se compro la membresia null si no se compro ninguna"
+    fecha_compra: Optional[date] = Field(
+        default=None,
+        description="Fecha en la que se compró la membresía, null si no se compró ninguna"
     )
     
-    fecha_expiracion: date = Field(
-        description = "Fecha de expiracion de la membresia"
+    fecha_expiracion: Optional[date] = Field(
+        default=None,
+        description="Fecha de expiración de la membresía"
     )
