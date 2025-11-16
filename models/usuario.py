@@ -24,8 +24,8 @@ class User(BaseModel):
         examples=["usuario@example.com"]
     )   
 
-    id: Optional[str] = Field(
-        default=None,   
+    pais_id: int = Field(
+        description="ID del país del usuario"
     )
     
     contraseña: str = Field(
@@ -35,6 +35,10 @@ class User(BaseModel):
         examples=["MiPassword123!"]
     )
 
+    foto: Optional[str] = Field(
+        default=None,
+        description="URL"
+    )
     @field_validator('password')
     @classmethod
     def validate_password_complexity(cls, value: str):
@@ -45,7 +49,3 @@ class User(BaseModel):
         if not re.search(r"[@$!%*?&]", value):
             raise ValueError("La contraseña debe contener al menos un carácter especial (@$!%*?&).")
         return value
-
-
-
-   
