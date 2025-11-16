@@ -24,7 +24,7 @@ class User(BaseModel):
         examples=["usuario@example.com"]
     )   
 
-    pais_id: int = Field(
+    id_pais: int = Field(
         description="ID del país del usuario"
     )
     

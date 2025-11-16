@@ -11,14 +11,14 @@ logger = logging.getLogger(__name__)
 
 async def get_one_user(id: int) -> User:
     sql = """
-        SELECT id, pais_id, correo, nombre, apellido, foto
+        SELECT id, id_pais, correo, nombre, apellido, foto
         FROM GD.USUARIO
         WHERE id = ?
     """
 
     try:
         result = await execute_query_json(sql, params=[id])
-        data = json.loads(result)
+        data = result
 
         if len(data) == 0:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -31,13 +31,13 @@ async def get_one_user(id: int) -> User:
 
 async def get_all_users() -> list[User]:
     sql = """
-        SELECT id, pais_id, correo, nombre, apellido, foto
+        SELECT id, id_pais, correo, nombre, apellido, foto
         FROM GD.USUARIO
     """
 
     try:
         result = await execute_query_json(sql)
-        return json.loads(result)
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
@@ -77,7 +77,7 @@ async def update_user(user: User) -> User:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     sql_find = """
-        SELECT id, pais_id, correo, nombre, apellido, foto
+        SELECT id, id_pais, correo, nombre, apellido, foto
         FROM GD.USUARIO
         WHERE id = ?
     """
@@ -92,12 +92,12 @@ async def update_user(user: User) -> User:
 
 async def create_user(user: User) -> User:
     sql = """
-        INSERT INTO usuario (pais_id, correo, nombre, apellido, contraseña, foto)
+        INSERT INTO usuario (id_pais, correo, nombre, apellido, contraseña, foto)
         VALUES (?, ?, ?, ?, ?)
     """
 
     params = [
-        user.pais_id,
+        user.id_pais,
         user.correo,
         user.nombre,
         user.apellido,
@@ -111,7 +111,7 @@ async def create_user(user: User) -> User:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     sql_find = """
-        SELECT id, pais_id, correo, nombre, apellido
+        SELECT id, id_pais, correo, nombre, apellido
         FROM GD.USUARIO
         WHERE correo = ?
     """

@@ -10,7 +10,7 @@ class Archivo(BaseModel):
         description="ID del archivo"
     )
     
-    id_propietario: int = Field(
+    id_usuario: int = Field(
         description="Usuario propietario del archivo"
     )
 

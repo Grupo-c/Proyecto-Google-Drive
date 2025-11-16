@@ -5,7 +5,7 @@ from utils.database import execute_query_json
 
 async def get_one_file(id: int) -> Archivo:
     sql = """
-        SELECT id, usuario_id AS id_propietario, carpeta_id AS id_carpeta,
+        SELECT id, id_usuario, id_carpeta,
                nombre, tipo, tamaño, fecha_creacion,
                fecha_modificacion, url, visibilidad
         FROM GD.ARCHIVO
@@ -14,7 +14,7 @@ async def get_one_file(id: int) -> Archivo:
 
     try:
         result = await execute_query_json(sql, [id])
-        data = json.loads(result)
+        data = result
 
         if len(data) == 0:
             raise HTTPException(status_code=404, detail="Archivo no encontrado")
@@ -27,7 +27,7 @@ async def get_one_file(id: int) -> Archivo:
 
 async def get_all_files() -> list[Archivo]:
     sql = """
-        SELECT id, usuario_id AS id_propietario, carpeta_id AS id_carpeta,
+        SELECT id, id_usuario, id_carpeta,
                nombre, tipo, tamaño, fecha_creacion,
                fecha_modificacion, url, visibilidad
         FROM GD.ARCHIVO
@@ -35,7 +35,7 @@ async def get_all_files() -> list[Archivo]:
 
     try:
         result = await execute_query_json(sql)
-        return json.loads(result)
+        return result
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
@@ -54,13 +54,13 @@ async def delete_file(id: int) -> str:
 
 async def create_file(file: Archivo) -> Archivo:
     sql = """
-        INSERT INTO archivo (usuario_id, carpeta_id, nombre, tipo, tamaño,
+        INSERT INTO archivo (id_usuario, id_carpeta, nombre, tipo, tamaño,
                              fecha_creacion, fecha_modificacion, url, visibilidad)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     params = [
-        file.id_propietario,
+        file.id_usuario,
         file.id_carpeta,
         file.nombre,
         file.tipo,
@@ -77,7 +77,7 @@ async def create_file(file: Archivo) -> Archivo:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     sql_find = """
-        SELECT id, usuario_id AS id_propietario, carpeta_id AS id_carpeta,
+        SELECT id, id_usuario, id_carpeta,
                nombre, tipo, tamaño, fecha_creacion,
                fecha_modificacion, url, visibilidad
         FROM GD.ARCHIVO
@@ -114,7 +114,7 @@ async def update_file(file: Archivo) -> Archivo:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     sql_find = """
-        SELECT id, usuario_id AS id_propietario, carpeta_id AS id_carpeta,
+        SELECT id, id_usuario,id_carpeta,
                nombre, tipo, tamaño, fecha_creacion,
                fecha_modificacion, url, visibilidad
         FROM GD.ARCHIVO
