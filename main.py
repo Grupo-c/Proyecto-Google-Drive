@@ -1,24 +1,12 @@
 from fastapi import FastAPI
-from utils.database import execute_query_json
 import uvicorn
 
 app = FastAPI()
 
-@app.get("/usuarios")
-async def get_usuarios():
-    query = """
-        SELECT 
-            ID,
-            NOMBRE,
-            APELLIDO,
-            ID_PAIS,
-            CORREO,
-            FOTO,
-            ACTIVO
-        FROM GD.USUARIO;
-    """
-    result = await execute_query_json(query)
-    return result
+from routes.usuario import router as usuario_router
+from routes.archivo import router as archivo_router
+app.include_router(usuario_router)
+app.include_router(archivo_router)
 
 
 if __name__ == "__main__":
