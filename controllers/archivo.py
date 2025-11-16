@@ -82,7 +82,7 @@ async def delete_file(id: int) -> str:
 async def create_file(file: Archivo) -> Archivo:
     sql = """
         INSERT INTO archivo (id_usuario, id_carpeta, nombre, tipo, tamaño,
-                             fecha_creacion, fecha_modificacion, url, visibilidad)
+                                fecha_creacion, fecha_modificacion, url, visibilidad)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
@@ -105,8 +105,8 @@ async def create_file(file: Archivo) -> Archivo:
 
     sql_find = """
         SELECT id, id_usuario, id_carpeta,
-               nombre, tipo, tamaño, fecha_creacion,
-               fecha_modificacion, url, visibilidad
+                nombre, tipo, tamaño, fecha_creacion,
+                fecha_modificacion, url, visibilidad
         FROM GD.ARCHIVO
         WHERE nombre = ? AND usuario_id = ?
     """
@@ -142,8 +142,8 @@ async def update_file(file: Archivo) -> Archivo:
 
     sql_find = """
         SELECT id, id_usuario,id_carpeta,
-               nombre, tipo, tamaño, fecha_creacion,
-               fecha_modificacion, url, visibilidad
+                nombre, tipo, tamaño, fecha_creacion,
+                fecha_modificacion, url, visibilidad
         FROM GD.ARCHIVO
         WHERE id = ?
     """
