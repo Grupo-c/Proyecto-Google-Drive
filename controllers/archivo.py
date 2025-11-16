@@ -12,7 +12,7 @@ async def get_one_file(id: int) -> Archivo:
             A.NOMBRE, 
             A.TIPO, 
             CASE 
-                WHEN A.TAMAÑO >= 1000 THEN CONCAT(ROUND(A.TAMAÑO / 1024.0, 2), ' GB')
+                WHEN A.TAMAÑO >= 1024 THEN CONCAT(ROUND(A.TAMAÑO / 1024.0, 2), ' GB')
                 ELSE CONCAT(A.TAMAÑO, ' MB')
             END AS TAMAÑO,
             A.FECHA_CREACION,
