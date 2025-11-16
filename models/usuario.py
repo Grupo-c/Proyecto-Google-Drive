@@ -39,7 +39,7 @@ class User(BaseModel):
         default=None,
         description="URL"
     )
-    @field_validator('password')
+    @field_validator('contraseña')
     @classmethod
     def validate_password_complexity(cls, value: str):
         if not re.search(r"[A-Z]", value):
