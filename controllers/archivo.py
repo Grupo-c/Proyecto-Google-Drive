@@ -8,9 +8,10 @@ async def get_one_file(id: int) -> Archivo:
         SELECT id, usuario_id AS id_propietario, carpeta_id AS id_carpeta,
                nombre, tipo, tamaño, fecha_creacion,
                fecha_modificacion, url, visibilidad
-        FROM archivo
+        FROM GD.ARCHIVO
         WHERE id = ?
     """
+
     try:
         result = await execute_query_json(sql, [id])
         data = json.loads(result)
@@ -29,7 +30,7 @@ async def get_all_files() -> list[Archivo]:
         SELECT id, usuario_id AS id_propietario, carpeta_id AS id_carpeta,
                nombre, tipo, tamaño, fecha_creacion,
                fecha_modificacion, url, visibilidad
-        FROM archivo
+        FROM GD.ARCHIVO
     """
 
     try:
@@ -41,7 +42,7 @@ async def get_all_files() -> list[Archivo]:
 
 
 async def delete_file(id: int) -> str:
-    sql = "DELETE FROM archivo WHERE id = ?"
+    sql = "DELETE FROM GD.ARCHIVO WHERE id = ?"
 
     try:
         await execute_query_json(sql, [id], needs_commit=True)
@@ -79,7 +80,7 @@ async def create_file(file: Archivo) -> Archivo:
         SELECT id, usuario_id AS id_propietario, carpeta_id AS id_carpeta,
                nombre, tipo, tamaño, fecha_creacion,
                fecha_modificacion, url, visibilidad
-        FROM archivo
+        FROM GD.ARCHIVO
         WHERE nombre = ? AND usuario_id = ?
     """
 
@@ -100,7 +101,7 @@ async def update_file(file: Archivo) -> Archivo:
     set_vars = " = ?, ".join(keys) + " = ?"
 
     sql = f"""
-        UPDATE archivo
+        UPDATE GD.ARCHIVO
         SET {set_vars}
         WHERE id = ?
     """
@@ -116,7 +117,7 @@ async def update_file(file: Archivo) -> Archivo:
         SELECT id, usuario_id AS id_propietario, carpeta_id AS id_carpeta,
                nombre, tipo, tamaño, fecha_creacion,
                fecha_modificacion, url, visibilidad
-        FROM archivo
+        FROM GD.ARCHIVO
         WHERE id = ?
     """
 

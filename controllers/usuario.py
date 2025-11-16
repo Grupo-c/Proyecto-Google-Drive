@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 async def get_one_user(id: int) -> User:
     sql = """
         SELECT id, pais_id, correo, nombre, apellido, foto
-        FROM usuario
+        FROM GD.USUARIO
         WHERE id = ?
     """
 
@@ -32,7 +32,7 @@ async def get_one_user(id: int) -> User:
 async def get_all_users() -> list[User]:
     sql = """
         SELECT id, pais_id, correo, nombre, apellido, foto
-        FROM usuario
+        FROM GD.USUARIO
     """
 
     try:
@@ -44,7 +44,7 @@ async def get_all_users() -> list[User]:
 
 async def delete_user(id: int) -> str:
     sql = """
-        DELETE FROM usuario
+        DELETE FROM GD.USUARIO
         WHERE id = ?
     """
 
@@ -63,7 +63,7 @@ async def update_user(user: User) -> User:
     set_vars = " = ?, ".join(keys) + " = ?"
 
     sql = f"""
-        UPDATE usuario
+        UPDATE GD.USUARIO
         SET {set_vars}
         WHERE id = ?
     """
@@ -78,7 +78,7 @@ async def update_user(user: User) -> User:
 
     sql_find = """
         SELECT id, pais_id, correo, nombre, apellido, foto
-        FROM usuario
+        FROM GD.USUARIO
         WHERE id = ?
     """
 
@@ -112,7 +112,7 @@ async def create_user(user: User) -> User:
 
     sql_find = """
         SELECT id, pais_id, correo, nombre, apellido
-        FROM usuario
+        FROM GD.USUARIO
         WHERE correo = ?
     """
 
