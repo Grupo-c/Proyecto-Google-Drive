@@ -5,11 +5,22 @@ from utils.database import execute_query_json
 
 async def get_one_file(id: int) -> Archivo:
     sql = """
-        SELECT id, id_usuario, id_carpeta,
-               nombre, tipo, tamaño, fecha_creacion,
-               fecha_modificacion, url, visibilidad
-        FROM GD.ARCHIVO
-        WHERE id = ?
+        SELECT 
+            A.ID, 
+            U.NOMBRE AS NOMBRE_USUARIO, 
+            C.NOMBRE AS NOMBRE_CARPETA,
+            A.NOMBRE, 
+            A.TIPO, 
+            A.TAMAÑO,
+            A.FECHA_CREACION,
+            A.FECHA_MODIFICACION, 
+            A.URL,
+            A.VISIBILIDAD
+        FROM GD.ARCHIVO A
+        LEFT JOIN GD.USUARIO U ON A.ID_USUARIO = U.ID
+        LEFT JOIN GD.CARPETA C ON A.ID_CARPETA = C.ID
+        WHERE A.ID = ?
+
     """
 
     try:
@@ -27,10 +38,20 @@ async def get_one_file(id: int) -> Archivo:
 
 async def get_all_files() -> list[Archivo]:
     sql = """
-        SELECT id, id_usuario, id_carpeta,
-               nombre, tipo, tamaño, fecha_creacion,
-               fecha_modificacion, url, visibilidad
-        FROM GD.ARCHIVO
+        SELECT 
+            A.ID, 
+            U.NOMBRE AS NOMBRE_USUARIO, 
+            C.NOMBRE AS NOMBRE_CARPETA,
+            A.NOMBRE, 
+            A.TIPO, 
+            A.TAMAÑO,
+            A.FECHA_CREACION,
+            A.FECHA_MODIFICACION, 
+            A.URL,
+            A.VISIBILIDAD
+        FROM GD.ARCHIVO A
+        LEFT JOIN GD.USUARIO U ON A.ID_USUARIO = U.ID
+        LEFT JOIN GD.CARPETA C ON A.ID_CARPETA = C.ID
     """
 
     try:

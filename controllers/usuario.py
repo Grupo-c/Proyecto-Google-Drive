@@ -11,9 +11,16 @@ logger = logging.getLogger(__name__)
 
 async def get_one_user(id: int) -> User:
     sql = """
-        SELECT id, id_pais, correo, nombre, apellido, foto
+        SELECT 
+            GD.USUARIO.ID,
+            GD.USUARIO.NOMBRE,
+            GD.USUARIO.APELLIDO,
+            GD.USUARIO.CORREO,
+            GD.USUARIO.FOTO,
+            GD.PAIS.NOMBRE AS NOMBRE_PAIS
         FROM GD.USUARIO
-        WHERE id = ?
+        LEFT JOIN GD.PAIS ON GD.USUARIO.ID_PAIS = GD.PAIS.ID
+        WHERE GD.USUARIO.ID = ?
     """
 
     try:
@@ -31,8 +38,15 @@ async def get_one_user(id: int) -> User:
 
 async def get_all_users() -> list[User]:
     sql = """
-        SELECT id, id_pais, correo, nombre, apellido, foto
+        SELECT 
+            GD.USUARIO.ID,
+            GD.USUARIO.NOMBRE,
+            GD.USUARIO.APELLIDO,
+            GD.USUARIO.CORREO,
+            GD.USUARIO.FOTO,
+            GD.PAIS.NOMBRE AS NOMBRE_PAIS
         FROM GD.USUARIO
+        LEFT JOIN GD.PAIS ON GD.USUARIO.ID_PAIS = GD.PAIS.ID
     """
 
     try:
