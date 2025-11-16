@@ -11,7 +11,10 @@ async def get_one_file(id: int) -> Archivo:
             C.NOMBRE AS NOMBRE_CARPETA,
             A.NOMBRE, 
             A.TIPO, 
-            A.TAMAÑO,
+            CASE 
+                WHEN A.TAMAÑO >= 1000 THEN CONCAT(ROUND(A.TAMAÑO / 1024.0, 2), ' GB')
+                ELSE CONCAT(A.TAMAÑO, ' MB')
+            END AS TAMAÑO,
             A.FECHA_CREACION,
             A.FECHA_MODIFICACION, 
             A.URL,
@@ -44,7 +47,10 @@ async def get_all_files() -> list[Archivo]:
             C.NOMBRE AS NOMBRE_CARPETA,
             A.NOMBRE, 
             A.TIPO, 
-            A.TAMAÑO,
+            CASE 
+                WHEN A.TAMAÑO >= 1000 THEN CONCAT(ROUND(A.TAMAÑO / 1024.0, 2), ' GB')
+                ELSE CONCAT(A.TAMAÑO, ' MB')
+            END AS TAMAÑO,
             A.FECHA_CREACION,
             A.FECHA_MODIFICACION, 
             A.URL,

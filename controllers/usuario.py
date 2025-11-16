@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 async def get_one_user(id: int) -> User:
     sql = """
         SELECT 
-            GD.USUARIO.ID,
-            GD.USUARIO.NOMBRE,
-            GD.USUARIO.APELLIDO,
-            GD.USUARIO.CORREO,
-            GD.USUARIO.FOTO,
-            GD.PAIS.NOMBRE AS NOMBRE_PAIS
-        FROM GD.USUARIO
-        LEFT JOIN GD.PAIS ON GD.USUARIO.ID_PAIS = GD.PAIS.ID
+            U.ID,
+            U.NOMBRE,
+            U.APELLIDO,
+            U.CORREO,
+            U.FOTO,
+            P.NOMBRE AS NOMBRE_PAIS
+        FROM GD.USUARIO U
+        LEFT JOIN GD.PAIS P ON U.ID_PAIS = P.ID
         WHERE GD.USUARIO.ID = ?
     """
 
@@ -39,14 +39,14 @@ async def get_one_user(id: int) -> User:
 async def get_all_users() -> list[User]:
     sql = """
         SELECT 
-            GD.USUARIO.ID,
-            GD.USUARIO.NOMBRE,
-            GD.USUARIO.APELLIDO,
-            GD.USUARIO.CORREO,
-            GD.USUARIO.FOTO,
-            GD.PAIS.NOMBRE AS NOMBRE_PAIS
-        FROM GD.USUARIO
-        LEFT JOIN GD.PAIS ON GD.USUARIO.ID_PAIS = GD.PAIS.ID
+            U.ID,
+            U.NOMBRE,
+            U.APELLIDO,
+            U.CORREO,
+            U.FOTO,
+            P.NOMBRE AS NOMBRE_PAIS
+        FROM GD.USUARIO U
+        LEFT JOIN GD.PAIS P ON U.ID_PAIS = P.ID
     """
 
     try:
