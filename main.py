@@ -11,9 +11,10 @@ async def get_usuarios():
             ID,
             NOMBRE,
             APELLIDO,
+            ID_PAIS,
             CORREO,
             FOTO,
-            ID_PAIS
+            ACTIVO
         FROM GD.USUARIO;
     """
     result = await execute_query_json(query)
