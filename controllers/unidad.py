@@ -36,7 +36,6 @@ async def create_unidad(unidad: Unidad) -> Unidad:
     ]
     try:
         await execute_query_json(sql, params, needs_commit=True)
-        # Traer la unidad recién creada
         sql_find = "SELECT TOP 1 * FROM GD.UNIDAD WHERE id_usuario = ? ORDER BY id DESC"
         result = await execute_query_json(sql_find, [unidad.id_usuario])
         return result[0]
