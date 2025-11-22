@@ -180,3 +180,4 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 secrets/credenciales.json
+wallet_Google_Drive/
