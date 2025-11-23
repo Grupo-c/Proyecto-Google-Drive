@@ -2,6 +2,8 @@ from fastapi import HTTPException
 from models.favoritos import Favorito
 from utils.database import execute_query_json
 
+
+
 async def get_one_favorito(id: int):
     sql = """
         SELECT 
@@ -12,17 +14,16 @@ async def get_one_favorito(id: int):
             A.NOMBRE AS NOMBRE_ARCHIVO,
             A.TIPO AS TIPO_ARCHIVO,
             CASE 
-                WHEN A.TAMAÑO >= 1024 THEN CONCAT(ROUND(A.TAMAÑO / 1024.0, 2), ' GB')
-                ELSE CONCAT(A.TAMAÑO, ' MB')
-            END AS TAMAÑO_ARCHIVO,
+                WHEN A.TAMANO >= 1024 THEN ROUND(A.TAMANO / 1024.0, 2) || ' GB'
+                ELSE A.TAMANO || ' MB'
+            END AS TAMANO_ARCHIVO,
             A.URL AS URL_ARCHIVO,
-
             F.FECHA_AGREGADO
         FROM GD.FAVORITOS F
         LEFT JOIN GD.USUARIO U ON F.ID_USUARIO = U.ID
         LEFT JOIN GD.CARPETA C ON F.ID_CARPETA = C.ID
         LEFT JOIN GD.ARCHIVO A ON F.ID_ARCHIVO = A.ID
-        WHERE F.ID = ?
+        WHERE F.ID = :1
     """
 
     try:
@@ -36,7 +37,7 @@ async def get_one_favorito(id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-    
+
 async def get_favoritos_by_usuario(id_usuario: int) -> list[Favorito]:
     sql = """
         SELECT 
@@ -47,48 +48,51 @@ async def get_favoritos_by_usuario(id_usuario: int) -> list[Favorito]:
             A.NOMBRE AS NOMBRE_ARCHIVO,
             A.TIPO AS TIPO_ARCHIVO,
             CASE 
-                WHEN A.TAMAÑO >= 1024 THEN CONCAT(ROUND(A.TAMAÑO / 1024.0, 2), ' GB')
-                ELSE CONCAT(A.TAMAÑO, ' MB')
-            END AS TAMAÑO_ARCHIVO,
+                WHEN A.TAMANO >= 1024 THEN ROUND(A.TAMANO / 1024.0, 2) || ' GB'
+                ELSE A.TAMANO || ' MB'
+            END AS TAMANO_ARCHIVO,
             A.URL AS URL_ARCHIVO,
-
             F.FECHA_AGREGADO
         FROM GD.FAVORITOS F
         LEFT JOIN GD.USUARIO U ON F.ID_USUARIO = U.ID
         LEFT JOIN GD.CARPETA C ON F.ID_CARPETA = C.ID
         LEFT JOIN GD.ARCHIVO A ON F.ID_ARCHIVO = A.ID
-        WHERE F.ID_USUARIO = ?
+        WHERE F.ID_USUARIO = :1
         ORDER BY F.FECHA_AGREGADO DESC
     """
 
     try:
-        result = await execute_query_json(sql, [id_usuario])
-        return result
+        return await execute_query_json(sql, [id_usuario])
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-    
+
 async def create_favorito(favorito: Favorito) -> Favorito:
+
     sql = """
         INSERT INTO GD.FAVORITOS (id_usuario, id_carpeta, id_archivo, fecha_agregado)
-        VALUES (?, ?, ?, ?)
+        VALUES (:1, :2, :3, :4)
     """
+
     params = [
         favorito.id_usuario,
         favorito.id_carpeta,
         favorito.id_archivo,
         favorito.fecha_agregado
     ]
+
     try:
         await execute_query_json(sql, params, needs_commit=True)
+
         sql_find = """
-            SELECT TOP 1 *
+            SELECT *
             FROM GD.FAVORITOS
-            WHERE id_usuario = ?
-              AND id_carpeta = ?
-              AND id_archivo = ?
-              AND fecha_agregado = ?
+            WHERE id_usuario = :1
+              AND id_carpeta = :2
+              AND id_archivo = :3
+              AND fecha_agregado = :4
             ORDER BY ID DESC
+            FETCH FIRST 1 ROW ONLY
         """
 
         result = await execute_query_json(sql_find, params)
@@ -97,15 +101,18 @@ async def create_favorito(favorito: Favorito) -> Favorito:
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-    
+
+
 
 async def delete_favorito(id_favorito: int) -> None:
-    sql = "DELETE FROM GD.FAVORITOS WHERE id = ?"
+    sql = "DELETE FROM GD.FAVORITOS WHERE id = :1"
+
     try:
         await execute_query_json(sql, [id_favorito], needs_commit=True)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-    
+
+
 async def update_favorito(favorito: Favorito) -> Favorito:
     data = favorito.model_dump(exclude_none=True)
 
@@ -116,15 +123,16 @@ async def update_favorito(favorito: Favorito) -> Favorito:
         data["fecha_agregado"] = data.pop("fecha")
 
     keys = list(data.keys())
-    set_vars = " = ?, ".join(keys) + " = ?"
+    set_vars = ", ".join([f"{k} = :{i+1}" for i, k in enumerate(keys)])
 
-    sql = f"UPDATE GD.FAVORITOS SET {set_vars} WHERE ID = ?"
+    sql = f"UPDATE GD.FAVORITOS SET {set_vars} WHERE ID = :{len(keys)+1}"
+
     params = [data[k] for k in keys] + [favorito.id_favorito]
 
     try:
         await execute_query_json(sql, params, needs_commit=True)
 
-        sql_find = "SELECT * FROM GD.FAVORITOS WHERE ID = ?"
+        sql_find = "SELECT * FROM GD.FAVORITOS WHERE ID = :1"
         result = await execute_query_json(sql_find, [favorito.id_favorito])
 
         return result[0] if result else None
