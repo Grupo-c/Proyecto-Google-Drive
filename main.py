@@ -12,12 +12,14 @@ from routes.archivo import router as archivo_router
 from routes.carpeta import router as carpeta_router
 from routes.unidad import router as unidad_router
 from routes.favoritos import router as favoritos_router
+from routes.comentarios import router as comentarios_router
 
 app.include_router(usuario_router)
 app.include_router(archivo_router)
 app.include_router(carpeta_router)
 app.include_router(unidad_router)
 app.include_router(favoritos_router)
+app.include_router(comentarios_router)
 
 SQL_USERNAME = os.getenv("SQL_USERNAME")
 SQL_PASSWORD = os.getenv("SQL_PASSWORD")
