@@ -10,33 +10,33 @@ from controllers.comentarios import (
 
 router = APIRouter(prefix="/comments")
 
+# Obtener todos los comentarios de un archivo
 @router.get("/", tags=["Comments"], status_code=status.HTTP_200_OK)
 async def get_all_comments_by_file(id_archivo: int):
-    """Get all comments from a file"""
     result = await get_comments_by_file(id_archivo)
     return result
 
+# Crear un nuevo comentario
 @router.post("/", tags=["Comments"], status_code=status.HTTP_201_CREATED)
 async def create_new_comment(comentario_data: Comentario):
-    """Create a new comment"""
     result = await create_comment(comentario_data)
     return result
 
+# Obtener un comentario por ID
 @router.get("/{id}", tags=["Comments"], status_code=status.HTTP_200_OK)
 async def get_comment_by_id(id: int):
-    """Get a specific comment by ID"""
     result = await get_one_comment(id)
     return result
 
+# Actualizar un comentario por ID
 @router.put("/{id}", tags=["Comments"], status_code=status.HTTP_200_OK)
 async def update_comment_by_id(comentario_data: Comentario, id: int):
-    """Update a comment"""
     comentario_data.id = id
     result = await update_comment(comentario_data)
     return result
 
+# Eliminar un comentario por ID
 @router.delete("/{id}", tags=["Comments"], status_code=status.HTTP_204_NO_CONTENT)
 async def delete_comment_by_id(id: int):
-    """Delete a comment"""
     await delete_comment(id)
     return None
