@@ -278,35 +278,29 @@ BEGIN
 END;
 /
 
+
 --Triger para calcular la capacidad actual
-DROP TRIGGER TR_CARPETA_FECHA_MODIFICACION;
 CREATE OR REPLACE TRIGGER TR_ARCHIVO_RECALCULAR_UNIDAD
 AFTER INSERT OR UPDATE OR DELETE ON ARCHIVO
-FOR EACH ROW
 DECLARE
-    v_unidad_id NUMBER;
-    v_cap_total NUMBER(10,2);
-    v_suma_archivos NUMBER(10,2);
+    v_cap_total NUMBER;
+    v_suma_archivos NUMBER;
 BEGIN
-    DECLARE
-        v_usuario NUMBER := NVL(:NEW.ID_USUARIO, :OLD.ID_USUARIO);
-    BEGIN
-        SELECT ID, CAPACIDAD_TOTAL
-        INTO v_unidad_id, v_cap_total
-        FROM UNIDAD
-        WHERE ID_USUARIO = v_usuario;
-
+    FOR u IN (SELECT ID, ID_USUARIO, CAPACIDAD_TOTAL FROM UNIDAD) LOOP
+        
         SELECT NVL(SUM(TAMANO), 0)
         INTO v_suma_archivos
         FROM ARCHIVO
-        WHERE ID_USUARIO = v_usuario;
+        WHERE ID_USUARIO = u.ID_USUARIO;
 
         UPDATE UNIDAD
-        SET CAPACIDAD_ACTUAL = v_cap_total - v_suma_archivos
-        WHERE ID = v_unidad_id;
-    END;
+        SET CAPACIDAD_ACTUAL = u.CAPACIDAD_TOTAL - v_suma_archivos
+        WHERE ID = u.ID;
+
+    END LOOP;
 END;
 /
+
 
 --Triger para calcular con el id de la membresia la capacidad actual
 CREATE OR REPLACE TRIGGER TR_UNIDAD_SET_CAPACIDAD
@@ -343,24 +337,26 @@ END;
 --Triger validacion y actualizacion de suma de carpetas 
 CREATE OR REPLACE TRIGGER TR_CARPETA_ACTUALIZAR_TAMANO
 AFTER INSERT OR UPDATE OR DELETE ON ARCHIVO
-FOR EACH ROW
 DECLARE
-    v_tamano NUMBER(10,2);
 BEGIN
-    DECLARE
-        v_carpeta_id NUMBER := NVL(:NEW.ID_CARPETA, :OLD.ID_CARPETA);
-    BEGIN
-        SELECT NVL(SUM(TAMANO),0)
-        INTO v_tamano
+    -- Actualiza tamaño de todas las carpetas que tengan archivos
+    MERGE INTO CARPETA C
+    USING (
+        SELECT ID_CARPETA, NVL(SUM(TAMANO),0) AS TOTAL_TAMANO
         FROM ARCHIVO
-        WHERE ID_CARPETA = v_carpeta_id;
+        GROUP BY ID_CARPETA
+    ) A
+    ON (C.ID = A.ID_CARPETA)
+    WHEN MATCHED THEN
+        UPDATE SET C.TAMANO = A.TOTAL_TAMANO;
 
-        UPDATE CARPETA
-        SET TAMANO = v_tamano
-        WHERE ID = v_carpeta_id;
-    END;
+    -- Para carpetas que ya no tengan archivos, poner tamaño en 0
+    UPDATE CARPETA
+    SET TAMANO = 0
+    WHERE ID NOT IN (SELECT DISTINCT ID_CARPETA FROM ARCHIVO);
 END;
 /
+
 
 --Trigger para validar que un archivo en PAPELERA se elimine de COMPARTIDOS,SPAM,FAVORITOS
 -- Para FAVORITOS
@@ -442,7 +438,6 @@ BEGIN
 END;
 /
 
-
 --Alters
 ALTER TABLE PAPELERA
 MODIFY FECHA_ENTRADA DEFAULT SYSDATE;
@@ -452,3 +447,10 @@ MODIFY FECHA_ELIMINACION DEFAULT (SYSDATE + 30);
 
 ALTER TABLE VERSION
 MODIFY FECHA DEFAULT SYSDATE;
+
+ALTER TABLE FAVORITOS
+MODIFY FECHA_AGREGADO DEFAULT SYSDATE;
+
+ALTER TABLE COMENTARIOS
+MODIFY FECHA DEFAULT SYSDATE;
+
