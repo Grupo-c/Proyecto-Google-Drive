@@ -29,8 +29,8 @@ async def get_db_connection():
         logger.error(f"Error de conexión a la base de datos: {str(e)}")
         raise Exception(f"Error de conexión a la base de datos: {str(e)}")
     except Exception as e:
-         logger.error(f"Error inesperado durante la conexión: {str(e)}")
-         raise
+        logger.error(f"Error inesperado durante la conexión: {str(e)}")
+        raise
 
 
 async def execute_query_json(sql_template, params=None, needs_commit=False):
@@ -56,7 +56,7 @@ async def execute_query_json(sql_template, params=None, needs_commit=False):
                 processed_row = [str(item) if isinstance(item, (bytes, bytearray)) else item for item in row]
                 results.append(dict(zip(columns, processed_row)))
         else:
-             logger.info("La consulta no devolvió columnas (posiblemente INSERT/UPDATE/DELETE).")
+            logger.info("La consulta no devolvió columnas (posiblemente INSERT/UPDATE/DELETE).")
 
         if needs_commit:
             logger.info("Realizando commit de la transacción.")
@@ -71,7 +71,7 @@ async def execute_query_json(sql_template, params=None, needs_commit=False):
                 logger.warning("Realizando rollback debido a error.")
                 conn.rollback()
             except pyodbc.Error as rb_e:
-                 logger.error(f"Error durante el rollback: {rb_e}")
+                logger.error(f"Error durante el rollback: {rb_e}")
 
         raise Exception(f"Error ejecutando consulta: {str(e)}") from e
     except Exception as e:
