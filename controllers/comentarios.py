@@ -3,8 +3,8 @@ from fastapi import HTTPException
 from models.comentarios import Comentario
 from utils.database import execute_query_json
 
-async def get_file_comments(id_archivo: int) -> list:
-    """Obtener todos los comentarios de un archivo"""
+async def get_comments_by_file(id_archivo: int) -> list:
+    """Get all comments from a file"""
     sql = """
         SELECT 
             C.ID,
@@ -28,8 +28,8 @@ async def get_file_comments(id_archivo: int) -> list:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-async def get_comment_one(id: int) -> dict:
-    """Obtener un comentario específico"""
+async def get_one_comment(id: int) -> dict:
+    """Get a specific comment"""
     sql = """
         SELECT 
             C.ID,
@@ -52,8 +52,8 @@ async def get_comment_one(id: int) -> dict:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-async def create_comment(comentario) -> dict:
-    """Crear un nuevo comentario"""
+async def create_comment(comentario: Comentario) -> dict:
+    """Create a new comment"""
     sql = """
         INSERT INTO GD.COMENTARIOS (ID_USUARIO, ID_ARCHIVO, TEXTO, FECHA)
         VALUES (?, ?, ?, SYSDATE)
@@ -84,8 +84,8 @@ async def create_comment(comentario) -> dict:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-async def update_comment(comentario) -> dict:
-    """Actualizar un comentario"""
+async def update_comment(comentario: Comentario) -> dict:
+    """Update a comment"""
     data = comentario.model_dump(exclude_none=True)
     
     keys = list(data.keys())
@@ -124,7 +124,7 @@ async def update_comment(comentario) -> dict:
 
 
 async def delete_comment(id: int) -> str:
-    """Eliminar un comentario"""
+    """Delete a comment"""
     sql = "DELETE FROM GD.COMENTARIOS WHERE ID = ?"
     
     try:
