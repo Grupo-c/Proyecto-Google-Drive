@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from models.compartidos import Compartido
 from utils.database import execute_query_json
 
-# Obtener todos los compartidos de un usuario
+# Obtener todos los compartidos de un usuario.
 async def get_shared_by_user(id_usuario: int) -> list:
     sql = """
         SELECT 
