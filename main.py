@@ -13,6 +13,10 @@ from routes.carpeta import router as carpeta_router
 from routes.unidad import router as unidad_router
 from routes.favoritos import router as favoritos_router
 from routes.comentarios import router as comentarios_router
+from routes.compartidos import router as compartidos_router
+from routes.descargas import router as descargas_router
+from routes.icono import router as icono_router
+from routes.membresia import router as memebresia_router
 
 app.include_router(usuario_router)
 app.include_router(archivo_router)
@@ -20,6 +24,10 @@ app.include_router(carpeta_router)
 app.include_router(unidad_router)
 app.include_router(favoritos_router)
 app.include_router(comentarios_router)
+app.include_router(compartidos_router)
+app.include_router(descargas_router)
+app.include_router(icono_router)
+app.include_router(memebresia_router)
 
 SQL_USERNAME = os.getenv("SQL_USERNAME")
 SQL_PASSWORD = os.getenv("SQL_PASSWORD")
