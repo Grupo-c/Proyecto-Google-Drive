@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from models.favoritos import Favorito
+from models.favoritos import Favorito, FavoritoUpdate
 from utils.database import execute_query_json
 
 
@@ -19,10 +19,10 @@ async def get_one_favorito(id: int):
             END AS TAMANO_ARCHIVO,
             A.URL AS URL_ARCHIVO,
             F.FECHA_AGREGADO
-        FROM GD.FAVORITOS F
-        LEFT JOIN GD.USUARIO U ON F.ID_USUARIO = U.ID
-        LEFT JOIN GD.CARPETA C ON F.ID_CARPETA = C.ID
-        LEFT JOIN GD.ARCHIVO A ON F.ID_ARCHIVO = A.ID
+        FROM FAVORITOS F
+        LEFT JOIN USUARIO U ON F.ID_USUARIO = U.ID
+        LEFT JOIN CARPETA C ON F.ID_CARPETA = C.ID
+        LEFT JOIN ARCHIVO A ON F.ID_ARCHIVO = A.ID
         WHERE F.ID = :1
     """
 
@@ -53,10 +53,10 @@ async def get_favoritos_by_usuario(id_usuario: int) -> list[Favorito]:
             END AS TAMANO_ARCHIVO,
             A.URL AS URL_ARCHIVO,
             F.FECHA_AGREGADO
-        FROM GD.FAVORITOS F
-        LEFT JOIN GD.USUARIO U ON F.ID_USUARIO = U.ID
-        LEFT JOIN GD.CARPETA C ON F.ID_CARPETA = C.ID
-        LEFT JOIN GD.ARCHIVO A ON F.ID_ARCHIVO = A.ID
+        FROM FAVORITOS F
+        LEFT JOIN USUARIO U ON F.ID_USUARIO = U.ID
+        LEFT JOIN CARPETA C ON F.ID_CARPETA = C.ID
+        LEFT JOIN ARCHIVO A ON F.ID_ARCHIVO = A.ID
         WHERE F.ID_USUARIO = :1
         ORDER BY F.FECHA_AGREGADO DESC
     """
@@ -70,7 +70,7 @@ async def get_favoritos_by_usuario(id_usuario: int) -> list[Favorito]:
 async def create_favorito(favorito: Favorito) -> Favorito:
 
     sql = """
-        INSERT INTO GD.FAVORITOS (id_usuario, id_carpeta, id_archivo, fecha_agregado)
+        INSERT INTO FAVORITOS (id_usuario, id_carpeta, id_archivo, fecha_agregado)
         VALUES (:1, :2, :3, :4)
     """
 
@@ -86,7 +86,7 @@ async def create_favorito(favorito: Favorito) -> Favorito:
 
         sql_find = """
             SELECT *
-            FROM GD.FAVORITOS
+            FROM FAVORITOS
             WHERE id_usuario = :1
               AND id_carpeta = :2
               AND id_archivo = :3
@@ -105,7 +105,7 @@ async def create_favorito(favorito: Favorito) -> Favorito:
 
 
 async def delete_favorito(id_favorito: int) -> None:
-    sql = "DELETE FROM GD.FAVORITOS WHERE id = :1"
+    sql = "DELETE FROM FAVORITOS WHERE id = :1"
 
     try:
         await execute_query_json(sql, [id_favorito], needs_commit=True)
@@ -113,29 +113,28 @@ async def delete_favorito(id_favorito: int) -> None:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-async def update_favorito(favorito: Favorito) -> Favorito:
-    data = favorito.model_dump(exclude_none=True)
+async def update_favorito(id: int, data: FavoritoUpdate) -> Favorito:
+    update_data = data.model_dump(exclude_none=True)
 
-    if "id_favorito" in data:
-        data.pop("id_favorito")
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No se enviaron campos para actualizar")
 
-    if "fecha" in data:
-        data["fecha_agregado"] = data.pop("fecha")
+    set_clauses = ", ".join([f"{k.upper()} = :{k}" for k in update_data.keys()])
+    sql = f"UPDATE FAVORITOS SET {set_clauses} WHERE ID = :id"
 
-    keys = list(data.keys())
-    set_vars = ", ".join([f"{k} = :{i+1}" for i, k in enumerate(keys)])
-
-    sql = f"UPDATE GD.FAVORITOS SET {set_vars} WHERE ID = :{len(keys)+1}"
-
-    params = [data[k] for k in keys] + [favorito.id_favorito]
+    params = {**update_data, "id": id}
 
     try:
         await execute_query_json(sql, params, needs_commit=True)
 
-        sql_find = "SELECT * FROM GD.FAVORITOS WHERE ID = :1"
-        result = await execute_query_json(sql_find, [favorito.id_favorito])
+        sql_find = "SELECT * FROM FAVORITOS WHERE ID = :id"
+        result = await execute_query_json(sql_find, {"id": id})
 
-        return result[0] if result else None
+        if not result:
+            raise HTTPException(status_code=404, detail="Favorito no encontrado")
+
+        return result[0]
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+

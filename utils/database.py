@@ -4,73 +4,71 @@ import oracledb
 import logging
 import asyncio
 
+# Cargar variables de entorno
 load_dotenv()
 
+# Logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# Configuración de conexión desde .env
-user = os.getenv("SQL_USERNAME")       # admin
-password = os.getenv("SQL_PASSWORD")  # Proyecto-bases123
-dsn = os.getenv("ORACLE_DSN")         # googledrive_high
-client_path = os.getenv("ORACLE_CLIENT_PATH")  # C:\oracle\instantclient_23_0
+# Configuración Oracle
+USER = os.getenv("SQL_USERNAME")
+PASSWORD = os.getenv("SQL_PASSWORD")
+DSN = os.getenv("ORACLE_DSN")
+CLIENT_PATH = os.getenv("ORACLE_CLIENT_PATH")
 
-# Inicializar cliente Oracle (Thick)
-if client_path:
-    oracledb.init_oracle_client(lib_dir=client_path)
+# Inicializar cliente Oracle (THICK MODE)
+if CLIENT_PATH:
+    oracledb.init_oracle_client(lib_dir=CLIENT_PATH)
 
-async def get_db_connection():
-    """
-    Obtiene una conexión a la base de datos Oracle usando oracledb (Thick).
-    """
-    try:
-        logger.info("Intentando conectar a Oracle DB...")
-        # Conexión sin 'encoding' explícito
-        conn = oracledb.connect(user=user, password=password, dsn=dsn)
-        logger.info("Conexión exitosa a Oracle DB.")
-        return conn
-    except oracledb.Error as e:
-        logger.error(f"Error de conexión a Oracle: {str(e)}")
-        raise Exception(f"Error de conexión a Oracle: {str(e)}")
-    except Exception as e:
-        logger.error(f"Error inesperado durante la conexión: {str(e)}")
-        raise
 
-async def execute_query_json(sql_template, params=None, needs_commit=False):
+
+def execute_query_sync(sql, params=None, needs_commit=False):
     conn = None
     cursor = None
     try:
-        conn = await get_db_connection()
+        logger.info(f"Ejecutando SQL (sync): {sql}")
+
+        conn = oracledb.connect(user=USER, password=PASSWORD, dsn=DSN)
         cursor = conn.cursor()
-        param_info = "(sin parámetros)" if not params else f"(con {len(params)} parámetros)"
-        logger.info(f"Ejecutando consulta {param_info}: {sql_template}")
 
         if params:
-            cursor.execute(sql_template, params)
+            cursor.execute(sql, params)
         else:
-            cursor.execute(sql_template)
+            cursor.execute(sql)
 
         results = []
-        if cursor.description:
+
+        if cursor.description:  # SELECT
             columns = [col[0] for col in cursor.description]
             for row in cursor.fetchall():
-                processed_row = [str(item) if isinstance(item, (bytes, bytearray)) else item for item in row]
-                results.append(dict(zip(columns, processed_row)))
+                row = list(row)
+                results.append(dict(zip(columns, row)))
 
         if needs_commit:
             conn.commit()
 
         return results
 
-    except oracledb.Error as e:
+    except Exception as e:
         if conn and needs_commit:
             conn.rollback()
-        raise Exception(f"Error ejecutando consulta: {str(e)}") from e
+        raise Exception(f"Error ejecutando consulta: {str(e)}")
+
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
+
+
+
+async def execute_query_json(sql, params=None, needs_commit=False):
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(
+        None,
+        lambda: execute_query_sync(sql, params, needs_commit)
+    )

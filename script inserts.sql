@@ -85,3 +85,8 @@ VALUES (2, 3, 'C:/Downloads', SYSDATE, SYSDATE);
 
 COMMIT;
 
+INSERT INTO ARCHIVO (ID_USUARIO, ID_CARPETA, ID_ICONO, NOMBRE, TIPO, TAMANO, URL)
+VALUES (1, 1, 1, 'informe_finanzas', 'pdf', 750, 'docs/informe_finanzas.pdf');
+
+SELECT *  FROM  ARCHIVO
+SELECT * FROM FAVORITOS

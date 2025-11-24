@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status
-from models.favoritos import Favorito
+from models.favoritos import Favorito, FavoritoUpdate
 from controllers.favoritos import (
     get_one_favorito,
     get_favoritos_by_usuario,
@@ -18,10 +18,10 @@ async def get_all_favoritos_route(id_usuario: int):
 async def create_new_favorito(favorito_data: Favorito):
     return await create_favorito(favorito_data)
 
-@router.put("/{id}", tags=["Favoritos"], status_code=status.HTTP_201_CREATED)
-async def update_favorito_route(favorito_data: Favorito, id: int):
-    favorito_data.id_favorito = id
-    return await update_favorito(favorito_data)
+@router.put("/{id}", tags=["Favoritos"], status_code=status.HTTP_200_OK)
+async def update_favorito_route(id: int, body: FavoritoUpdate):
+    return await update_favorito(id, body)
+
 
 @router.delete("/{id}", tags=["Favoritos"], status_code=status.HTTP_204_NO_CONTENT)
 async def delete_favorito_route(id: int):
