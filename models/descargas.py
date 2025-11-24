@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import date, datetime
 import re
 
-class Offline(BaseModel):
+class Descarga(BaseModel):
 
     id_carpeta_offline: Optional[int] = Field(
         description = "ID de la carpeta descargada"
