@@ -31,7 +31,7 @@ async def get_one_file(id: int) -> Archivo:
             raise HTTPException(status_code=404, detail="Archivo no encontrado")
         return result[0]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
 # Obtener todos los archivos
@@ -58,7 +58,7 @@ async def get_all_files() -> list[Archivo]:
     try:
         return await execute_query_json(sql)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
 # Eliminar archivo
@@ -68,7 +68,7 @@ async def delete_file(id: int) -> str:
         await execute_query_json(sql, {"id": id}, needs_commit=True)
         return "DELETED"
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
 # Crear archivo
@@ -92,7 +92,7 @@ async def create_file(file: Archivo) -> Archivo:
     try:
         await execute_query_json(sql, params, needs_commit=True)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
     # Obtener el archivo recién insertado
     sql_find = "SELECT * FROM ARCHIVO WHERE URL = :url"
@@ -100,7 +100,7 @@ async def create_file(file: Archivo) -> Archivo:
         result = await execute_query_json(sql_find, {"url": file.url})
         return result[0] if result else None
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
 # Actualizar archivo
@@ -116,7 +116,7 @@ async def update_file(file: Archivo) -> Archivo:
     try:
         await execute_query_json(sql, params, needs_commit=True)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
     # Obtener archivo actualizado
     sql_find = "SELECT * FROM ARCHIVO WHERE ID = :id"
@@ -124,4 +124,4 @@ async def update_file(file: Archivo) -> Archivo:
         result = await execute_query_json(sql_find, {"id": file.id})
         return result[0] if result else None
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
