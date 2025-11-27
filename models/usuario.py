@@ -29,3 +29,21 @@ class User(BaseModel):
         default=None, alias="FOTO", 
         description="URL"
     )
+
+class UserUpdate(BaseModel):
+    nombre: str = Field(
+        alias="NOMBRE",
+        description="User First Name",
+        pattern=r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$",
+        examples=["Juan", "María José"]
+    )
+    apellido: str = Field(
+        alias="APELLIDO",
+        description="User Last Name",
+        pattern=r"^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ' -]+$",
+        examples=["Pérez", "García López"]
+    )
+    foto: Optional[str] = Field(
+        default=None, alias="FOTO", 
+        description="URL"
+    )
