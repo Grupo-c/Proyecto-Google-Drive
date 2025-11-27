@@ -24,17 +24,17 @@ async def create_new_usuario(usuario_data: User):
     return result
 
 
-@router.put("/{id}", tags=["Usuarios"], status_code=status.HTTP_201_CREATED)
+@router.put("/{id}", tags=["Usuarios"], status_code=status.HTTP_200_OK)
 async def update_usuario_info(usuario_data: User, id: int):
     usuario_data.id = id
     result = await update_user(usuario_data)
     return result
 
 
-@router.delete("/{id}", tags=["Usuarios"], status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", tags=["Usuarios"], status_code=status.HTTP_200_OK)
 async def delete_usuario(id: int):
     status_message = await delete_user(id)
-    return status_message
+    return {"detail": status_message}
 
 
 @router.get("/{id}", tags=["Usuarios"], status_code=status.HTTP_200_OK)

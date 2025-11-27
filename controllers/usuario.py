@@ -11,14 +11,13 @@ logger = logging.getLogger(__name__)
 async def get_one_user(id: int) -> User:
     sql = """
         SELECT 
-            U.ID,
-            U.NOMBRE,
-            U.APELLIDO,
-            U.CORREO,
-            U.FOTO,
-            P.NOMBRE AS NOMBRE_PAIS
+            U.ID AS id,
+            U.NOMBRE AS nombre,
+            U.APELLIDO AS apellido,
+            U.CORREO AS correo,
+            U.ID_PAIS AS id_pais,
+            U.FOTO AS foto
         FROM GD.USUARIO U
-        LEFT JOIN GD.PAIS P ON U.ID_PAIS = P.ID
         WHERE U.ID = :id
     """
 
@@ -28,31 +27,33 @@ async def get_one_user(id: int) -> User:
         if not result:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-        return result[0]
+        return User(**result[0])  # ← validación correcta
 
     except Exception as e:
         logger.error(f"Error al obtener usuario con ID {id}: {e}")
-        # Se añade 'from e' para encadenar la excepción original
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
+
 
 async def get_all_users() -> list[User]:
     sql = """
         SELECT 
-            U.ID,
-            U.NOMBRE,
-            U.APELLIDO,
-            U.CORREO,
-            U.FOTO,
-            P.NOMBRE AS NOMBRE_PAIS
+            U.ID AS id,
+            U.NOMBRE AS nombre,
+            U.APELLIDO AS apellido,
+            U.CORREO AS correo,
+            U.ID_PAIS AS id_pais,
+            U.FOTO AS foto
         FROM GD.USUARIO U
-        LEFT JOIN GD.PAIS P ON U.ID_PAIS = P.ID
     """
-
     try:
-        return await execute_query_json(sql)
+        result = await execute_query_json(sql)
+        
+        return [User(**row) for row in result]
+
     except Exception as e:
         logger.error(f"Error al obtener todos los usuarios: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
+
 
 async def delete_user(id: int) -> str:
     sql = """
@@ -96,7 +97,7 @@ async def update_user(user: User) -> User:
 
     try:
         result = await execute_query_json(sql_find, params={"id": user.id})
-        return result[0] if result else None
+        return User(**result[0]) if result else None
     except Exception as e:
         logger.error(f"Error al buscar usuario actualizado con ID {user.id}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
@@ -113,7 +114,6 @@ async def create_user(user: User) -> User:
         "apellido": user.apellido,
         "foto": user.foto
     }
-
     try:
         await execute_query_json(sql, params=params, needs_commit=True)
     except Exception as e:
@@ -121,13 +121,13 @@ async def create_user(user: User) -> User:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
     sql_find = """
-        SELECT id, id_pais, correo, nombre, apellido
+        SELECT id, id_pais, correo, nombre, apellido, foto
         FROM GD.USUARIO
         WHERE correo = :correo
     """
     try:
         result = await execute_query_json(sql_find, params={"correo": user.correo})
-        return result[0] if result else None
+        return User(**result[0]) if result else None
     except Exception as e:
         logger.error(f"Error al buscar usuario recién creado: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
