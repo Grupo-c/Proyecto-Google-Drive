@@ -2,7 +2,7 @@ from fastapi import HTTPException
 import logging
 from typing import List
 
-from models.permiso import FoldersPermiso
+from models.permiso_carpeta import FoldersPermiso
 from utils.database import execute_query_json
 
 logging.basicConfig(level=logging.INFO)

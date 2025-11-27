@@ -19,7 +19,6 @@ from routes.icono import router as icono_router
 from routes.membresia import router as memebresia_router
 from routes.papelera import router as papelera_router
 from routes.spam import router as spam_router
-
 from routes.tipo_permiso import router as tipo_permiso_router
 from routes.permiso_archivo import router as permiso_archivo_router
 from routes.permiso_carpetas import router as permiso_carpetas_router
