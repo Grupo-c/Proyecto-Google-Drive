@@ -68,36 +68,44 @@ async def get_favoritos_by_usuario(id_usuario: int) -> list[Favorito]:
 
 
 async def create_favorito(favorito: Favorito) -> Favorito:
+    if favorito.id_carpeta is None and favorito.id_archivo is None:
+        raise HTTPException(status_code=400, detail="Debe especificar id_carpeta o id_archivo")
 
-    sql = """
+    sql_insert = """
         INSERT INTO FAVORITOS (id_usuario, id_carpeta, id_archivo, fecha_agregado)
-        VALUES (:1, :2, :3, :4)
+        VALUES (:id_usuario, :id_carpeta, :id_archivo, :fecha_agregado)
     """
-
-    params = [
-        favorito.id_usuario,
-        favorito.id_carpeta,
-        favorito.id_archivo,
-        favorito.fecha_agregado
-    ]
+    fecha_agregado = favorito.fecha_agregado or datetime.utcnow()
+    params = {
+        "id_usuario": favorito.id_usuario,
+        "id_carpeta": favorito.id_carpeta,
+        "id_archivo": favorito.id_archivo,
+        "fecha_agregado": fecha_agregado
+    }
 
     try:
-        await execute_query_json(sql, params, needs_commit=True)
+        # Insertar el favorito
+        await execute_query_json(sql_insert, params, needs_commit=True)
 
+        # Recuperar el registro insertado
         sql_find = """
-            SELECT *
+            SELECT 
+                ID AS id_favorito,
+                ID_USUARIO AS id_usuario,
+                ID_CARPETA AS id_carpeta,
+                ID_ARCHIVO AS id_archivo,
+                FECHA_AGREGADO AS fecha
             FROM FAVORITOS
-            WHERE id_usuario = :1
-              AND id_carpeta = :2
-              AND id_archivo = :3
-              AND fecha_agregado = :4
-            ORDER BY ID DESC
-            FETCH FIRST 1 ROW ONLY
+            WHERE id_usuario = :id_usuario
+              AND NVL(id_carpeta, -1) = NVL(:id_carpeta, -1)
+              AND NVL(id_archivo, -1) = NVL(:id_archivo, -1)
+              AND FECHA_AGREGADO = :fecha_agregado
         """
+        favorito_creado = await execute_query_json(sql_find, params)
+        if not favorito_creado:
+            raise HTTPException(status_code=500, detail="Favorito no encontrado después de la inserción")
 
-        result = await execute_query_json(sql_find, params)
-
-        return result[0]
+        return Favorito.model_validate(favorito_creado[0])
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

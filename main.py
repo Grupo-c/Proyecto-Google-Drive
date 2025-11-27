@@ -17,6 +17,9 @@ from routes.compartidos import router as compartidos_router
 from routes.descargas import router as descargas_router
 from routes.icono import router as icono_router
 from routes.membresia import router as memebresia_router
+from routes.papelera import router as papelera_router
+from routes.spam import router as spam_router
+from routes.permiso import router as permiso_router
 
 app.include_router(usuario_router)
 app.include_router(archivo_router)
@@ -28,6 +31,9 @@ app.include_router(favoritos_router)
 app.include_router(descargas_router)
 app.include_router(icono_router)
 app.include_router(memebresia_router)
+app.include_router(papelera_router)
+app.include_router(spam_router)
+app.include_router(permiso_router)
 
 SQL_USERNAME = os.getenv("SQL_USERNAME")
 SQL_PASSWORD = os.getenv("SQL_PASSWORD")

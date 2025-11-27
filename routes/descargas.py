@@ -1,49 +1,31 @@
 from fastapi import APIRouter, status
-from models.descargas import Descarga
+from models.descargas import Descarga, DescargaUpdate
 from controllers.descargas import (
-    get_downloads_by_user,
-    get_downloads_by_file,
-    get_one_download,
-    create_download,
-    update_download,
-    delete_download
+    get_all_descargas,
+    get_one_descarga,
+    create_descarga,
+    update_descarga,
+    delete_descarga
 )
 
-router = APIRouter(prefix="/Descargas")
+router = APIRouter(prefix="/descargas")
 
-# Obtener todas las descargas de un usuario
-@router.get("/user/{id_usuario}", tags=["Descargas"], status_code=status.HTTP_200_OK)
-async def get_all_downloads_by_user(id_usuario: int):
-    result = await get_downloads_by_user(id_usuario)
-    return result
+@router.get("/", tags=["Descargas"], status_code=status.HTTP_200_OK)
+async def get_all_descargas():
+    return await get_all_descargas()
 
-# Obtener todas las descargas de un archivo
-@router.get("/file/{id_archivo}", tags=["Descargas"], status_code=status.HTTP_200_OK)
-async def get_all_downloads_by_file(id_archivo: int):
-    result = await get_downloads_by_file(id_archivo)
-    return result
-
-# Obtener una descarga por ID
 @router.get("/{id}", tags=["Descargas"], status_code=status.HTTP_200_OK)
-async def get_download_by_id(id: int):
-    result = await get_one_download(id)
-    return result
+async def get_one_descarga(id: int):
+    return await get_one_descarga(id)
 
-# Crear una nueva descarga
 @router.post("/", tags=["Descargas"], status_code=status.HTTP_201_CREATED)
-async def create_new_download(descarga_data: Descarga):
-    result = await create_download(descarga_data)
-    return result
+async def create_new_descarga(descarga_data: Descarga):
+    return await create_descarga(descarga_data)
 
-# Actualizar una descarga por ID
 @router.put("/{id}", tags=["Descargas"], status_code=status.HTTP_200_OK)
-async def update_download_by_id(descarga_data: Descarga, id: int):
-    descarga_data.id = id
-    result = await update_download(descarga_data)
-    return result
+async def update_descarga_info(id: int, descarga_data: DescargaUpdate):
+    return await update_descarga(id, descarga_data)
 
-# Eliminar una descarga por ID
-@router.delete("/{id}", tags=["Descargas"], status_code=status.HTTP_204_NO_CONTENT)
-async def delete_download_by_id(id: int):
-    await delete_download(id)
-    return None
+@router.delete("/{id}", tags=["Descargas"], status_code=status.HTTP_200_OK)
+async def delete_descarga(id: int):
+    return {"message": await delete_descarga(id)}

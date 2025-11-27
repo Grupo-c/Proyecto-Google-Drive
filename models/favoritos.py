@@ -9,6 +9,7 @@ class Favorito(BaseModel):
     }
 
     id_favorito: Optional[int] = Field(
+        default=None,
         alias="ID",
         description="ID del favorito"
     )
@@ -24,7 +25,8 @@ class Favorito(BaseModel):
         alias="ID_CARPETA",
         description="ID de la carpeta favorita"
     )
-    fecha: Optional[datetime] = Field(
+    fecha_agregado: Optional[datetime] = Field(
+        default_factory=datetime.utcnow,
         alias="FECHA_AGREGADO",
         description="Fecha en que se agregó el favorito"
     )

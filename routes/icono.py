@@ -1,42 +1,31 @@
 from fastapi import APIRouter, status
-from models.icono import Icono
+from models.icono import Icono, IconoUpdate
 from controllers.icono import (
-    get_all_icons,
-    get_one_icon,
-    create_icon,
-    update_icon,
-    delete_icon
+    get_all_iconos,
+    get_one_icono,
+    create_icono,
+    update_icono,
+    delete_icono
 )
 
 router = APIRouter(prefix="/Icono")
 
-# Obtener todos los iconos
-@router.get("/", tags=["Icono"], status_code=status.HTTP_200_OK)
-async def get_all_icons_route():
-    result = await get_all_icons()
-    return result
+@router.get("/", tags=["Iconos"], status_code=status.HTTP_200_OK)
+async def get_all_iconos():
+    return await get_all_iconos()
 
-# Obtener un icono por ID
-@router.get("/{id}", tags=["Icono"], status_code=status.HTTP_200_OK)
-async def get_icon_by_id(id: int):
-    result = await get_one_icon(id)
-    return result
+@router.get("/{id}", tags=["Iconos"], status_code=status.HTTP_200_OK)
+async def get_one_icono(id: int):
+    return await get_one_icono(id)
 
-# Crear un nuevo icono
-@router.post("/", tags=["Icono"], status_code=status.HTTP_201_CREATED)
-async def create_new_icon(icono_data: Icono):
-    result = await create_icon(icono_data)
-    return result
+@router.post("/", tags=["Iconos"], status_code=status.HTTP_201_CREATED)
+async def create_new_icono(icono_data: Icono):
+    return await create_icono(icono_data)
 
-# Actualizar un icono por ID
-@router.put("/{id}", tags=["Icono"], status_code=status.HTTP_200_OK)
-async def update_icon_by_id(icono_data: Icono, id: int):
-    icono_data.id = id
-    result = await update_icon(icono_data)
-    return result
+@router.put("/{id}", tags=["Iconos"], status_code=status.HTTP_200_OK)
+async def update_icono_info(id: int, icono_data: IconoUpdate):
+    return await update_icono(id, icono_data)
 
-# Eliminar un icono por ID
-@router.delete("/{id}", tags=["Icono"], status_code=status.HTTP_204_NO_CONTENT)
-async def delete_icon_by_id(id: int):
-    await delete_icon(id)
-    return None
+@router.delete("/{id}", tags=["Iconos"], status_code=status.HTTP_200_OK)
+async def delete_icono(id: int):
+    return {"message": await delete_icono(id)}
