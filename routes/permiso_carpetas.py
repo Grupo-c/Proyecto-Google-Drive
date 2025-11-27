@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 from models.permiso import FoldersPermiso
-from controllers.permiso import (
+from controllers.permiso_carpetas import (
     add_permiso_carpeta,
     list_permisos_carpeta,
     remove_permiso_carpeta,

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 from models.permiso import Permiso
-from controllers.permiso import (
+from controllers.tipo_permiso import (
     get_all_permisos,
     get_one_permiso,
     create_permiso,
