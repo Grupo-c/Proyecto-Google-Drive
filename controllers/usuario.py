@@ -7,7 +7,6 @@ from models.usuario import User
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 async def get_one_user(id: int) -> User:
     sql = """
         SELECT 
@@ -17,22 +16,17 @@ async def get_one_user(id: int) -> User:
             U.CORREO AS correo,
             U.ID_PAIS AS id_pais,
             U.FOTO AS foto
-        FROM GD.USUARIO U
+        FROM USUARIO U
         WHERE U.ID = :id
     """
-
     try:
         result = await execute_query_json(sql, {"id": id})
-
         if not result:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
         return User(**result[0])
-
     except Exception as e:
         logger.error(f"Error al obtener usuario con ID {id}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
 
 async def get_all_users() -> list[User]:
     sql = """
@@ -43,77 +37,52 @@ async def get_all_users() -> list[User]:
             U.CORREO AS correo,
             U.ID_PAIS AS id_pais,
             U.FOTO AS foto
-        FROM GD.USUARIO U
+        FROM USUARIO U
     """
-
     try:
         result = await execute_query_json(sql)
         return [User(**row) for row in result]
-
     except Exception as e:
         logger.error(f"Error al obtener todos los usuarios: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 async def delete_user(id: int) -> str:
-
-
-    sql = """
-        DELETE FROM GD.USUARIO
-        WHERE ID = :id
-    """
-
+    sql = "DELETE FROM USUARIO WHERE ID = :id"
     try:
         await execute_query_json(sql, {"id": id}, needs_commit=True)
         return f"Usuario con id {id} eliminado correctamente."
-
     except Exception as e:
         logger.error(f"Error al eliminar usuario con ID {id}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-
 async def update_user(user: User) -> User:
     data = user.model_dump(exclude_none=True)
-
     keys = [k for k in data if k != "id"]
     set_clause = ", ".join([f"{k} = :{k}" for k in keys])
-
-    sql = f"""
-        UPDATE GD.USUARIO
-        SET {set_clause}
-        WHERE ID = :id
-    """
-
+    sql = f"UPDATE USUARIO SET {set_clause} WHERE ID = :id"
     params = {k: data[k] for k in keys}
     params["id"] = user.id
 
     try:
         await execute_query_json(sql, params, needs_commit=True)
-
     except Exception as e:
         logger.error(f"Error al actualizar usuario con ID {user.id}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-
-    sql_find = """
-        SELECT id, id_pais, correo, nombre, apellido, foto
-        FROM GD.USUARIO
-        WHERE id = :id
-    """
-
+    sql_find = "SELECT ID AS id, NOMBRE AS nombre, APELLIDO AS apellido, CORREO AS correo, ID_PAIS AS id_pais, FOTO AS foto FROM USUARIO WHERE ID = :id"
     try:
         updated = await execute_query_json(sql_find, {"id": user.id})
         return User(**updated[0]) if updated else None
-
     except Exception as e:
         logger.error(f"Error al buscar usuario actualizado con ID {user.id}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
+
 async def create_user(user: User) -> User:
     sql = """
-        INSERT INTO GD.USUARIO (ID_PAIS, CORREO, NOMBRE, APELLIDO, FOTO)
+        INSERT INTO USUARIO (ID_PAIS, CORREO, NOMBRE, APELLIDO, FOTO)
         VALUES (:id_pais, :correo, :nombre, :apellido, :foto)
     """
-
     params = {
         "id_pais": user.id_pais,
         "correo": user.correo,
@@ -124,22 +93,19 @@ async def create_user(user: User) -> User:
 
     try:
         await execute_query_json(sql, params, needs_commit=True)
-
     except Exception as e:
         logger.error(f"Error al crear usuario: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-
     sql_find = """
-        SELECT id, id_pais, correo, nombre, apellido, foto
-        FROM GD.USUARIO
-        WHERE correo = :correo
+        SELECT ID AS id, NOMBRE AS nombre, APELLIDO AS apellido, CORREO AS correo, ID_PAIS AS id_pais, FOTO AS foto
+        FROM USUARIO
+        WHERE CORREO = :correo
     """
-
     try:
         result = await execute_query_json(sql_find, {"correo": user.correo})
         return User(**result[0]) if result else None
-
     except Exception as e:
         logger.error(f"Error al buscar usuario recién creado: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
+

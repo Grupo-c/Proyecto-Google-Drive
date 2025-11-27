@@ -4,7 +4,7 @@ from datetime import date, datetime
 import re
 
 
-class Archivo(BaseModel):
+class Papelera(BaseModel):
     id: Optional[int] = Field(
         default=None, 
         description="ID del archivo"
