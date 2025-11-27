@@ -23,7 +23,9 @@ class User(BaseModel):
     )
     id_pais: int = Field(
         alias="ID_PAIS", 
-        description="ID del país del usuario")
+        description="ID del país del usuario"
+    )
     foto: Optional[str] = Field(
         default=None, alias="FOTO", 
-        description="URL")
+        description="URL"
+    )

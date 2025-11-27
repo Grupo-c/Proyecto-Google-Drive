@@ -10,38 +10,39 @@ logger = logging.getLogger(__name__)
 async def get_one_user(id: int) -> User:
     sql = """
         SELECT 
-            U.ID AS ID,
-            U.NOMBRE AS NOMBRE,
-            U.APELLIDO AS APELLIDO,
-            U.CORREO AS CORREO,
-            U.ID_PAIS AS ID_PAIS,
-            U.FOTO AS FOTO
+            U.ID, 
+            U.NOMBRE, 
+            U.APELLIDO, 
+            U.CORREO, 
+            U.FOTO, 
+            P.NOMBRE AS NOMBRE_PAIS
         FROM USUARIO U
+        LEFT JOIN PAIS P ON U.ID_PAIS = P.ID
         WHERE U.ID = :id
     """
     try:
         result = await execute_query_json(sql, {"id": id})
         if not result:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
-        return User(**result[0])
+        return result[0]
     except Exception as e:
         logger.error(f"Error al obtener usuario con ID {id}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-async def get_all_users() -> list[User]:
+async def get_all_users():
     sql = """
         SELECT 
-            U.ID AS ID,
-            U.NOMBRE AS NOMBRE,
-            U.APELLIDO AS APELLIDO,
-            U.CORREO AS CORREO,
-            U.ID_PAIS AS ID_PAIS,
-            U.FOTO AS FOTO
+            U.ID, 
+            U.NOMBRE, 
+            U.APELLIDO, 
+            U.CORREO, 
+            U.FOTO, 
+            P.NOMBRE AS NOMBRE_PAIS
         FROM USUARIO U
+        LEFT JOIN PAIS P ON U.ID_PAIS = P.ID
     """
     try:
-        result = await execute_query_json(sql)
-        return [User(**row) for row in result]
+        return await execute_query_json(sql)
     except Exception as e:
         logger.error(f"Error al obtener todos los usuarios: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
