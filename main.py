@@ -36,7 +36,6 @@ ORACLE_DSN = os.getenv("ORACLE_DSN")
 ORACLE_ENCODING = os.getenv("ORACLE_ENCODING", "UTF-8")
 ORACLE_CLIENT_PATH = os.getenv("ORACLE_CLIENT_PATH")
 
-
 oracledb.init_oracle_client(lib_dir=os.path.abspath(ORACLE_CLIENT_PATH))
 os.environ["TNS_ADMIN"] = os.path.abspath(ORACLE_WALLET_PATH)
 
