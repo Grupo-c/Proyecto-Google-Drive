@@ -8,7 +8,7 @@ from controllers.icono import (
     delete_icono
 )
 
-router = APIRouter(prefix="/iconos")
+router = APIRouter(prefix="/Icono")
 
 @router.get("/", tags=["Iconos"], status_code=status.HTTP_200_OK)
 async def get_all_iconos():
