@@ -1,30 +1,40 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import date, datetime
-import re
+from datetime import datetime
 
 class Descarga(BaseModel):
-
-    id_carpeta_offline: Optional[int] = Field(
-        description = "ID de la carpeta descargada"
+    id: Optional[int] = Field(
+        default=None,
+        description="ID de la descarga"
     )
-    
-    id_archivo_offline: Optional[int] = Field(
-        description = "ID del archivo descargado"
-    )
-
     id_usuario: int = Field(
-        description = "ID del usuario que descargo"
+        description="Usuario que realiza la descarga"
+    )
+    id_archivo: int = Field(
+        description="Archivo descargado"
+    )
+    id_carpeta: Optional[int] = Field(
+        default=None,
+        description="Carpeta asociada a la descarga"
+    )
+    destino_descarga: str = Field(
+        description="Ruta o destino de la descarga"
+    )
+    fecha_descarga: Optional[datetime] = Field(
+        default=None,
+        description="Fecha en que se realizó la descarga"
+    )
+    fecha_actualizacion: Optional[datetime] = Field(
+        default=None,
+        description="Fecha de última actualización de la descarga"
     )
 
-    fecha_sincronizacion: datetime = Field(
-        description = "Fecha de descarga inicial"
+class DescargaUpdate(BaseModel):
+    destino_descarga: Optional[str] = Field(
+        default=None,
+        description="Ruta o destino de la descarga"
     )
-    
-    fecha_de_actualizacion: datetime = Field(
-        description = "Fecha de actualizacion de la descarga"
-    )
-    
-    local_path: str = Field(
-        description = "Ruta de la descarga"
+    fecha_actualizacion: Optional[datetime] = Field(
+        default=None,
+        description="Fecha de última actualización de la descarga"
     )
