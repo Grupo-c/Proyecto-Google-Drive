@@ -7,7 +7,7 @@ async def get_one_carpeta(id: int):
         SELECT 
             c.id,
             c.nombre,
-            c.tamaño,
+            c.tamano,
             c.fecha_creacion,
             c.fecha_modificacion,
             c.visibilidad,
@@ -32,7 +32,7 @@ async def get_all_carpetas():
         SELECT 
             c.id,
             c.nombre,
-            c.tamaño,
+            c.tamano,
             c.fecha_creacion,
             c.fecha_modificacion,
             c.visibilidad,
