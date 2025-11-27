@@ -14,6 +14,12 @@ class Archivo(BaseModel):
         description="Usuario propietario del archivo"
     )
 
+    id_icono: int = Field(
+    default=None,
+    description="Icono asociado al archivo"
+    )
+
+
     id_carpeta: Optional[int] = Field(
         description="Carpeta donde se almacena el archivo"
     )
@@ -33,11 +39,13 @@ class Archivo(BaseModel):
         examples=[5.2]
     )
 
-    fecha_creacion: date = Field(
+    fecha_creacion: Optional[datetime] = Field(
+         default=None,
         description="Fecha de creación"
     )
 
-    fecha_modificacion: date = Field(
+    fecha_modificacion: Optional[datetime] = Field(
+        default=None,
         description="Fecha de modificación"
     )
 
@@ -49,3 +57,4 @@ class Archivo(BaseModel):
         default=True, 
         description="Archivo público o privado"
     )
+    

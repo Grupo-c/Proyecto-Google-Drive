@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from models.archivo import Archivo
 from utils.database import execute_query_json
 
-# Obtener un archivo por ID
+
 async def get_one_file(id: int) -> Archivo:
     sql = """
         SELECT 
@@ -34,7 +34,7 @@ async def get_one_file(id: int) -> Archivo:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
-# Obtener todos los archivos
+
 async def get_all_files() -> list[Archivo]:
     sql = """
         SELECT 
@@ -61,17 +61,27 @@ async def get_all_files() -> list[Archivo]:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
-# Eliminar archivo
 async def delete_file(id: int) -> str:
-    sql = "DELETE FROM ARCHIVO WHERE ID = :id"
     try:
-        await execute_query_json(sql, {"id": id}, needs_commit=True)
-        return "DELETED"
+        # Borrar hijos primero
+        sql_cleanup = """
+        BEGIN
+            DELETE FROM FAVORITOS WHERE ID_ARCHIVO = :id;
+            DELETE FROM SPAM WHERE ID_ARCHIVO = :id;
+            DELETE FROM COMPARTIDOS WHERE ID_ARCHIVO = :id;
+        END;
+        """
+        await execute_query_json(sql_cleanup, {"id": id}, needs_commit=True)
+
+        # Borrar archivo
+        sql_delete = "DELETE FROM ARCHIVO WHERE ID = :id"
+        await execute_query_json(sql_delete, {"id": id}, needs_commit=True)
+
+        return f"Archivo con id {id} eliminado correctamente."
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
-# Crear archivo
 async def create_file(file: Archivo) -> Archivo:
     sql = """
         INSERT INTO ARCHIVO 
@@ -85,7 +95,7 @@ async def create_file(file: Archivo) -> Archivo:
         "id_icono": file.id_icono,
         "nombre": file.nombre,
         "tipo": file.tipo,
-        "tamano": file.tamanno,
+        "tamano": file.tamaño,
         "url": file.url,
         "visibilidad": file.visibilidad
     }
@@ -94,7 +104,7 @@ async def create_file(file: Archivo) -> Archivo:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-    # Obtener el archivo recién insertado
+
     sql_find = "SELECT * FROM ARCHIVO WHERE URL = :url"
     try:
         result = await execute_query_json(sql_find, {"url": file.url})
@@ -103,7 +113,7 @@ async def create_file(file: Archivo) -> Archivo:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
 
-# Actualizar archivo
+
 async def update_file(file: Archivo) -> Archivo:
     data = file.model_dump(exclude_none=True)
     keys = [k for k in data if k != "id"]
@@ -118,7 +128,7 @@ async def update_file(file: Archivo) -> Archivo:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-    # Obtener archivo actualizado
+
     sql_find = "SELECT * FROM ARCHIVO WHERE ID = :id"
     try:
         result = await execute_query_json(sql_find, {"id": file.id})
