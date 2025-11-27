@@ -1,27 +1,32 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import date, datetime
-import re
 
 class Compartido(BaseModel):
     id: Optional[int] = Field(
-        default=None, description="ID del registro de compartido"
+        default=None,
+        description="ID del registro de compartido"
+    )
+    id_usuario: int = Field(
+        description="Usuario que comparte"
+    )
+    id_archivo: int = Field(
+        description="Archivo compartido"
+    )
+    id_carpeta: Optional[int] = Field(
+        default=None,
+        description="Carpeta compartida"
+    )
+    id_permiso: int = Field(
+        description="Permiso asignado"
     )
 
-    id_usuario_receptor: int = Field(
-        description = "Id del usuario que recibe el archivo/carpeta"
+class CompartidoUpdate(BaseModel):
+    id_carpeta: Optional[int] = Field(
+        default=None,
+        description="Carpeta compartida"
     )
-
-    id_carpeta_compartida: Optional[int] = Field(
-        description = "ID de la carpeta compartida"
+    id_permiso: Optional[int] = Field(
+        default=None,
+        description="Permiso asignado"
     )
-
-    id_archivo_compartido: Optional[int] = Field(
-        description = "ID del archivo compartido"
-    )
-
-    id_tipo_permiso: int = Field(
-        description = "ID de tipo de permiso"
-    )
-
     
