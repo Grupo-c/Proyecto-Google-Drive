@@ -1,12 +1,6 @@
 from fastapi import APIRouter, status
 from models.icono import Icono, IconoUpdate
-from controllers.icono import (
-    get_all_iconos,
-    get_one_icono,
-    create_icono,
-    update_icono,
-    delete_icono
-)
+from controllers.icono import get_all_iconos, get_one_icono, create_icono, update_icono, delete_icono
 
 router = APIRouter(prefix="/iconos")
 
@@ -24,7 +18,7 @@ async def create_new_icono(icono_data: Icono):
 
 @router.put("/{id}", tags=["Iconos"], status_code=status.HTTP_200_OK)
 async def update_icono_info(id: int, icono_data: IconoUpdate):
-    return await update_icono(id, icono_data)
+    return await update_icono(id, icono_data.nombre, icono_data.url)
 
 @router.delete("/{id}", tags=["Iconos"], status_code=status.HTTP_200_OK)
 async def delete_icono(id: int):
