@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 async def get_trash_by_user(id_usuario: int) -> List[Papelera]:
 	sql = """
 		SELECT
-			P.ID AS ID_FAVORITO,
+			P.ID AS ID_PAPELERA,
 			U.NOMBRE AS NOMBRE_USUARIO,
 			C.NOMBRE AS NOMBRE_CARPETA,
 			A.NOMBRE AS NOMBRE_ARCHIVO,
