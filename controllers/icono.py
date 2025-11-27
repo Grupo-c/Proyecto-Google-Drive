@@ -25,8 +25,8 @@ async def create_icono(icono: Icono) -> Icono:
     try:
         await execute_query_json(sql, params, needs_commit=True)
         result = await execute_query_json(
-            "SELECT * FROM ICONOS WHERE URL = :url ORDER BY ID DESC",
-            {"url": icono.url}
+            "SELECT * FROM ICONOS WHERE NOMBRE = :nombre AND URL = :url ORDER BY ID DESC",
+            params
         )
         return result[0] if result else None
     except Exception as e:
