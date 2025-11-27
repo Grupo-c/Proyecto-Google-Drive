@@ -23,3 +23,5 @@ class Compartido(BaseModel):
     id_tipo_permiso: int = Field(
         description = "ID de tipo de permiso"
     )
+
+    
