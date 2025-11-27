@@ -1,12 +1,7 @@
 from fastapi import APIRouter, status
 from models.descargas import Descarga, DescargaUpdate
-from controllers.descargas import (
-    get_all_descargas,
-    get_one_descarga,
-    create_descarga,
-    update_descarga,
-    delete_descarga
-)
+from controllers.descargas import get_all_descargas, get_one_descarga, create_descarga, update_descarga, delete_descarga
+
 
 router = APIRouter(prefix="/descargas")
 
