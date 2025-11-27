@@ -1,42 +1,31 @@
 from fastapi import APIRouter, status
-from models.compartidos import Compartido
+from models.compartidos import Compartido, CompartidoUpdate
 from controllers.compartidos import (
-    get_shared_by_user,
-    get_one_shared,
-    create_shared,
-    update_shared,
-    delete_shared
+    get_all_compartidos,
+    get_one_compartido,
+    create_compartido,
+    update_compartido,
+    delete_compartido
 )
 
-router = APIRouter(prefix="/Compartidos")
+router = APIRouter(prefix="/compartidos")
 
-# Obtener todos los compartidos de un usuario
 @router.get("/", tags=["Compartidos"], status_code=status.HTTP_200_OK)
-async def get_all_shared_by_user(id_usuario: int):
-    result = await get_shared_by_user(id_usuario)
-    return result
+async def get_all_compartidos():
+    return await get_all_compartidos()
 
-# Crear un nuevo compartido
-@router.post("/", tags=["Compartidos"], status_code=status.HTTP_201_CREATED)
-async def create_new_shared(compartido_data: Compartido):
-    result = await create_shared(compartido_data)
-    return result
-
-# Obtener un compartido por ID
 @router.get("/{id}", tags=["Compartidos"], status_code=status.HTTP_200_OK)
-async def get_shared_by_id(id: int):
-    result = await get_one_shared(id)
-    return result
+async def get_one_compartido(id: int):
+    return await get_one_compartido(id)
 
-# Actualizar un compartido por ID
+@router.post("/", tags=["Compartidos"], status_code=status.HTTP_201_CREATED)
+async def create_new_compartido(compartido_data: Compartido):
+    return await create_compartido(compartido_data)
+
 @router.put("/{id}", tags=["Compartidos"], status_code=status.HTTP_200_OK)
-async def update_shared_by_id(compartido_data: Compartido, id: int):
-    compartido_data.id = id
-    result = await update_shared(compartido_data)
-    return result
+async def update_compartido_info(id: int, compartido_data: CompartidosUpdate):
+    return await update_compartido(id, compartido_data)
 
-# Eliminar un compartido por ID
-@router.delete("/{id}", tags=["Compartidos"], status_code=status.HTTP_204_NO_CONTENT)
-async def delete_shared_by_id(id: int):
-    await delete_shared(id)
-    return None
+@router.delete("/{id}", tags=["Compartidos"], status_code=status.HTTP_200_OK)
+async def delete_compartido(id: int):
+    return {"message": await delete_compartido(id)}
