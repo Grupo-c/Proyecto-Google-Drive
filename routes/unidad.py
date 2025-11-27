@@ -1,11 +1,8 @@
 from fastapi import APIRouter, status
 from models.unidad import Unidad
 from controllers.unidad import (
-    create_unidad,
-    update_unidad,
-    delete_unidad,
-    get_all_unidades,
-    get_one_unidad
+    create_unidad, update_unidad, delete_unidad,
+    get_all_unidades, get_one_unidad
 )
 
 router = APIRouter(prefix="/unidades")
@@ -20,7 +17,7 @@ async def create_new_unidad(unidad_data: Unidad):
 
 @router.put("/{id}", tags=["Unidades"], status_code=status.HTTP_200_OK)
 async def update_unidad_route(unidad_data: Unidad, id: int):
-    unidad_data.id = id  
+    unidad_data.id = id
     return await update_unidad(unidad_data)
 
 @router.delete("/{id}", tags=["Unidades"], status_code=status.HTTP_204_NO_CONTENT)

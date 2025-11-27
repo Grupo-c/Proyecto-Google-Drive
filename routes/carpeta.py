@@ -1,11 +1,8 @@
 from fastapi import APIRouter, status
 from models.carpeta import Carpeta
 from controllers.carpeta import (
-    create_carpeta,
-    update_carpeta,
-    delete_carpeta,
-    get_all_carpetas,
-    get_one_carpeta
+    create_carpeta, update_carpeta, delete_carpeta,
+    get_all_carpetas, get_one_carpeta
 )
 
 router = APIRouter(prefix="/carpetas")
@@ -18,7 +15,7 @@ async def get_all_carpetas_route():
 async def create_new_carpeta(carpeta_data: Carpeta):
     return await create_carpeta(carpeta_data)
 
-@router.put("/{id}", tags=["Carpetas"], status_code=status.HTTP_201_CREATED)
+@router.put("/{id}", tags=["Carpetas"], status_code=status.HTTP_200_OK)
 async def update_carpeta_route(carpeta_data: Carpeta, id: int):
     carpeta_data.id = id
     return await update_carpeta(carpeta_data)
