@@ -20,17 +20,17 @@ async def get_all_comments() -> list[Comentario]:
         raise HTTPException(status_code=500, detail=str(e))
 
 async def create_comment(comment: Comentario) -> Comentario:
-    sql = """INSERT INTO COMENTARIOS (ID_USUARIO_COMENTADOR, ID_ARCHIVO, TEXTO) 
-             VALUES (:id_usuario_comentador, :id_archivo, :texto)"""
+    sql = """INSERT INTO COMENTARIOS (ID_USUARIO, ID_ARCHIVO, TEXTO) 
+             VALUES (:id_usuario, :id_archivo, :texto)"""
     params = {
-        "id_usuario_comentador": comment.id_usuario_comentador,
+        "id_usuario": comment.id_usuario,
         "id_archivo": comment.id_archivo,
         "texto": comment.texto
     }
     try:
         await execute_query_json(sql, params, needs_commit=True)
         result = await execute_query_json(
-            "SELECT * FROM COMENTARIOS WHERE ID_USUARIO_COMENTADOR=:id_usuario_comentador AND ID_ARCHIVO=:id_archivo ORDER BY ID DESC",
+            "SELECT * FROM COMENTARIOS WHERE ID_USUARIO=:id_usuario AND ID_ARCHIVO=:id_archivo ORDER BY ID DESC",
             params
         )
         return result[0] if result else None
