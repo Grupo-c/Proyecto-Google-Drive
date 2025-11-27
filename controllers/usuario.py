@@ -27,7 +27,7 @@ async def get_one_user(id: int) -> User:
         if not result:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-        return User(**result[0])  # ← validación correcta
+        return User(**result[0])
 
     except Exception as e:
         logger.error(f"Error al obtener usuario con ID {id}: {e}")
