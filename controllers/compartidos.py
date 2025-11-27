@@ -38,7 +38,7 @@ async def create_compartido(compartido: Compartido) -> Compartido:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def update_compartido(id: int, compartido_update: CompartidosUpdate) -> Compartido:
+async def update_compartido(id: int, compartido_update: CompartidoUpdate) -> Compartido:
     data = compartido_update.model_dump(exclude_none=True)
     if not data:
         raise HTTPException(status_code=400, detail="No se proporcionaron campos para actualizar")
