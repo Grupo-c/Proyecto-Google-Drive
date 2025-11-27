@@ -1,12 +1,7 @@
 from fastapi import APIRouter, status
 from models.compartidos import Compartido, CompartidoUpdate
-from controllers.compartidos import (
-    get_all_compartidos,
-    get_one_compartido,
-    create_compartido,
-    update_compartido,
-    delete_compartido
-)
+from controllers.compartidos import get_all_compartidos, get_one_compartido, create_compartido, update_compartido, delete_compartido
+
 
 router = APIRouter(prefix="/compartidos")
 

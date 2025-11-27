@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 import logging
-from typing import List, Dict, Any
+from typing import List
 
 from models.papelera import Papelera
 from utils.database import execute_query_json
@@ -8,26 +8,25 @@ from utils.database import execute_query_json
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-async def get_trash_by_user(id_usuario: int) -> List[Dict[str, Any]]:
-	# Devuelve una estructura similar a FAVORITOS pero para PAPELERA
-	# No se exponen los ids de archivo/carpeta, sólo sus nombres y metadatos
+async def get_trash_by_user(id_usuario: int) -> List[Papelera]:
 	sql = """
 		SELECT
-			P.ID AS ID_PAPELERA,
+			P.ID AS ID_FAVORITO,
 			U.NOMBRE AS NOMBRE_USUARIO,
+			C.ID AS ID_CARPETA,
 			C.NOMBRE AS NOMBRE_CARPETA,
+			A.ID AS ID_ARCHIVO,
 			A.NOMBRE AS NOMBRE_ARCHIVO,
 			A.TIPO AS TIPO_ARCHIVO,
-			COALESCE(A.TAMANO, P.TAMANO) AS TAMANO_ARCHIVO,
+			(CASE WHEN A.TAMANO IS NOT NULL THEN TO_CHAR(A.TAMANO) || ' MB'
+				 WHEN P.TAMANO IS NOT NULL THEN TO_CHAR(P.TAMANO) || ' MB' ELSE NULL END) AS TAMANO_ARCHIVO,
 			A.URL AS URL_ARCHIVO,
-			P.FECHA_ENTRADA AS FECHA_AGREGADO,
-			P.FECHA_ELIMINACION AS FECHA_ELIMINACION
+			P.FECHA_AGREGADO AS FECHA_ELIMINADO
 		FROM PAPELERA P
-		LEFT JOIN USUARIO U ON P.ID_USUARIO = U.ID
 		LEFT JOIN ARCHIVO A ON P.ID_ARCHIVO = A.ID
 		LEFT JOIN CARPETA C ON P.ID_CARPETA = C.ID
+		LEFT JOIN USUARIO U ON P.ID_USUARIO = U.ID
 		WHERE P.ID_USUARIO = :id_usuario
-		ORDER BY P.FECHA_ENTRADA DESC
 	"""
 	try:
 		return await execute_query_json(sql, {"id_usuario": id_usuario})
@@ -57,25 +56,8 @@ async def move_file_to_trash(id_archivo: int, id_usuario: int) -> Papelera:
 		"""
 		await execute_query_json(insert_sql, {"id_usuario": id_usuario, "id_archivo": id_archivo, "tamano": tamano}, needs_commit=True)
 
-		# Devolver la estructura detallada para el elemento añadido (archivo)
-		find_sql = """
-		SELECT
-			P.ID AS ID_PAPELERA,
-			U.NOMBRE AS NOMBRE_USUARIO,
-			C.NOMBRE AS NOMBRE_CARPETA,
-			A.NOMBRE AS NOMBRE_ARCHIVO,
-			A.TIPO AS TIPO_ARCHIVO,
-			COALESCE(A.TAMANO, P.TAMANO) AS TAMANO_ARCHIVO,
-			A.URL AS URL_ARCHIVO,
-			P.FECHA_ENTRADA AS FECHA_AGREGADO,
-			P.FECHA_ELIMINACION AS FECHA_ELIMINACION
-		FROM PAPELERA P
-		LEFT JOIN USUARIO U ON P.ID_USUARIO = U.ID
-		LEFT JOIN ARCHIVO A ON P.ID_ARCHIVO = A.ID
-		LEFT JOIN CARPETA C ON P.ID_CARPETA = C.ID
-		WHERE P.ID_ARCHIVO = :id_archivo
-		ORDER BY P.ID DESC
-		"""
+		# Devolver el registro recién insertado
+		find_sql = "SELECT * FROM PAPELERA WHERE ID_ARCHIVO = :id_archivo ORDER BY ID DESC"
 		result = await execute_query_json(find_sql, {"id_archivo": id_archivo})
 		return result[0] if result else None
 
@@ -104,25 +86,7 @@ async def move_folder_to_trash(id_carpeta: int, id_usuario: int) -> Papelera:
 		"""
 		await execute_query_json(insert_sql, {"id_usuario": id_usuario, "id_carpeta": id_carpeta, "tamano": tamano}, needs_commit=True)
 
-		# Devolver la estructura detallada para el elemento añadido (carpeta)
-		find_sql = """
-		SELECT
-			P.ID AS ID_PAPELERA,
-			U.NOMBRE AS NOMBRE_USUARIO,
-			C.NOMBRE AS NOMBRE_CARPETA,
-			A.NOMBRE AS NOMBRE_ARCHIVO,
-			A.TIPO AS TIPO_ARCHIVO,
-			COALESCE(A.TAMANO, P.TAMANO) AS TAMANO_ARCHIVO,
-			A.URL AS URL_ARCHIVO,
-			P.FECHA_ENTRADA AS FECHA_AGREGADO,
-			P.FECHA_ELIMINACION AS FECHA_ELIMINACION
-		FROM PAPELERA P
-		LEFT JOIN USUARIO U ON P.ID_USUARIO = U.ID
-		LEFT JOIN ARCHIVO A ON P.ID_ARCHIVO = A.ID
-		LEFT JOIN CARPETA C ON P.ID_CARPETA = C.ID
-		WHERE P.ID_CARPETA = :id_carpeta
-		ORDER BY P.ID DESC
-		"""
+		find_sql = "SELECT * FROM PAPELERA WHERE ID_CARPETA = :id_carpeta ORDER BY ID DESC"
 		result = await execute_query_json(find_sql, {"id_carpeta": id_carpeta})
 		return result[0] if result else None
 
@@ -217,5 +181,3 @@ async def empty_trash(id_usuario: int) -> str:
 	except Exception as e:
 		logger.error(f"Error al vaciar papelera para usuario {id_usuario}: {e}")
 		raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
-
