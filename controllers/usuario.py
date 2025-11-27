@@ -77,8 +77,6 @@ async def update_user(id: int, user_update: UserUpdate) -> User:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
     return User(**result[0])
 
-
-
 async def create_user(user: User) -> User:
     sql = """
         INSERT INTO USUARIO (ID_PAIS, CORREO, NOMBRE, APELLIDO, FOTO)

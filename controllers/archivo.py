@@ -3,7 +3,6 @@ from fastapi import HTTPException
 from models.archivo import Archivo, ArchivoUpdate
 from utils.database import execute_query_json
 
-
 async def get_one_file(id: int) -> Archivo:
     sql = """
         SELECT 
@@ -33,8 +32,6 @@ async def get_one_file(id: int) -> Archivo:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-
-
 async def get_all_files() -> list[Archivo]:
     sql = """
         SELECT 
@@ -59,7 +56,6 @@ async def get_all_files() -> list[Archivo]:
         return await execute_query_json(sql)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
 
 async def delete_file(id: int) -> str:
     try:
@@ -91,8 +87,6 @@ async def delete_file(id: int) -> str:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-
-
 async def create_file(file: Archivo) -> Archivo:
     sql = """
         INSERT INTO ARCHIVO 
@@ -122,8 +116,6 @@ async def create_file(file: Archivo) -> Archivo:
         return result[0] if result else None
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
-
 
 async def update_file(file: ArchivoUpdate) -> dict:
     data = file.model_dump(exclude_none=True)

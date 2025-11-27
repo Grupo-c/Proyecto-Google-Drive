@@ -7,7 +7,6 @@ class Favorito(BaseModel):
     model_config = {
         "populate_by_name": True
     }
-
     id_favorito: Optional[int] = Field(
         default=None,
         alias="ID",
@@ -30,7 +29,6 @@ class Favorito(BaseModel):
         alias="FECHA_AGREGADO",
         description="Fecha en que se agregó el favorito"
     )
-
 
 class FavoritoUpdate(BaseModel):
     id_usuario: Optional[int] = None

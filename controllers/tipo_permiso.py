@@ -8,7 +8,6 @@ from utils.database import execute_query_json
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 async def get_all_permisos() -> List[dict]:
     sql = """
         SELECT ID, NOMBRE, DESCRIPCION
@@ -20,7 +19,6 @@ async def get_all_permisos() -> List[dict]:
     except Exception as e:
         logger.error(f"Error al obtener permisos: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
 
 async def get_one_permiso(id_permiso: int) -> dict:
     sql = """
@@ -38,7 +36,6 @@ async def get_one_permiso(id_permiso: int) -> dict:
     except Exception as e:
         logger.error(f"Error al obtener permiso {id_permiso}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
 
 async def create_permiso(permiso: Permiso) -> dict:
     sql = """
@@ -65,7 +62,6 @@ async def create_permiso(permiso: Permiso) -> dict:
     except Exception as e:
         logger.error(f"Error al buscar permiso creado: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
 
 async def update_permiso(permiso: Permiso) -> dict:
     data = permiso.model_dump(exclude_none=True)
@@ -94,7 +90,6 @@ async def update_permiso(permiso: Permiso) -> dict:
         return await get_one_permiso(pid)
     except Exception:
         return {}
-
 
 async def delete_permiso(id_permiso: int) -> str:
     sql = "DELETE FROM PERMISOS WHERE ID = :id"

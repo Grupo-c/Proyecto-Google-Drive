@@ -38,7 +38,6 @@ async def restore_from_trash(id_papelera: int) -> str:
 		if not res:
 			raise HTTPException(status_code=404, detail="Entrada en papelera no encontrada")
 
-		# Para restaurar sólo se elimina la referencia en PAPELERA.
 		sql_delete = "DELETE FROM PAPELERA WHERE ID = :id"
 		await execute_query_json(sql_delete, {"id": id_papelera}, needs_commit=True)
 		return f"Elemento restaurado correctamente (id papelera {id_papelera})"
@@ -60,7 +59,6 @@ async def delete_permanent(id_papelera: int) -> str:
 		id_carpeta = row.get("ID_CARPETA")
 
 		if id_archivo:
-			# Eliminar dependencias y luego el archivo
 			sql_cleanup = """
 			BEGIN
 				DELETE FROM FAVORITOS WHERE ID_ARCHIVO = :id_archivo;
@@ -73,7 +71,6 @@ async def delete_permanent(id_papelera: int) -> str:
 			await execute_query_json(sql_cleanup, {"id_archivo": id_archivo}, needs_commit=True)
 
 		elif id_carpeta:
-			# Eliminar archivos dentro de la carpeta y luego la carpeta
 			sql_cleanup = """
 			BEGIN
 				FOR r IN (SELECT ID FROM ARCHIVO WHERE ID_CARPETA = :id_carpeta) LOOP
@@ -88,7 +85,6 @@ async def delete_permanent(id_papelera: int) -> str:
 			"""
 			await execute_query_json(sql_cleanup, {"id_carpeta": id_carpeta}, needs_commit=True)
 
-		# Finalmente eliminar la entrada en PAPELERA
 		sql_delete = "DELETE FROM PAPELERA WHERE ID = :id"
 		await execute_query_json(sql_delete, {"id": id_papelera}, needs_commit=True)
 
@@ -107,7 +103,6 @@ async def empty_trash(id_usuario: int) -> str:
 		if not items:
 			return "Papelera vacía"
 
-		# Borrar permanentemente cada elemento
 		for it in items:
 			pid = it.get("ID")
 			await delete_permanent(pid)

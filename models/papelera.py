@@ -3,7 +3,6 @@ from typing import Optional
 from datetime import date, datetime
 import re
 
-
 class Papelera(BaseModel):
     id: Optional[int] = Field(
         default=None, 

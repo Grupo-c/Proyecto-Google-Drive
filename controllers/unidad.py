@@ -3,7 +3,6 @@ from fastapi import HTTPException
 from models.unidad import Unidad, UnidadUpdate
 from utils.database import execute_query_json
 
-
 async def get_one_unidad(id: int) -> Unidad:
     sql = """
         SELECT 
@@ -37,7 +36,6 @@ async def get_one_unidad(id: int) -> Unidad:
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
 
 async def get_all_unidades() -> list[Unidad]:
     sql = """
@@ -101,7 +99,6 @@ async def create_unidad(unidad: Unidad) -> Unidad:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-
 async def update_unidad(data: UnidadUpdate) -> Unidad:
     sql_check = "SELECT ID FROM UNIDAD WHERE ID = :id"
     exists = await execute_query_json(sql_check, {"id": data.id})
@@ -145,7 +142,6 @@ async def update_unidad(data: UnidadUpdate) -> Unidad:
 
     result = await execute_query_json(sql_get, {"id": data.id})
     return result[0]
-
 
 async def delete_unidad(id: int) -> str:
     sql = "DELETE FROM UNIDAD WHERE ID = :id"

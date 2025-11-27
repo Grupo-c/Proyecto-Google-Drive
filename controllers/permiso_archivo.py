@@ -8,7 +8,6 @@ from utils.database import execute_query_json
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 async def add_permiso_archivo(data: ArchivosPermiso) -> dict:
     sql = "INSERT INTO ARCHIVO_PERMISO (ID_ARCHIVO, ID_PERMISO) VALUES (:id_archivo, :id_permiso)"
     params = {"id_archivo": data.id_archivo, "id_permiso": data.id_permiso}
@@ -39,7 +38,6 @@ async def add_permiso_archivo(data: ArchivosPermiso) -> dict:
         logger.error(f"Error al recuperar permiso asignado: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
-
 async def list_permisos_archivo(id_archivo: int) -> List[dict]:
     sql = """
         SELECT 
@@ -56,7 +54,6 @@ async def list_permisos_archivo(id_archivo: int) -> List[dict]:
     except Exception as e:
         logger.error(f"Error al listar permisos del archivo {id_archivo}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-
 
 async def remove_permiso_archivo(id: int) -> str:
     sql = "DELETE FROM ARCHIVO_PERMISO WHERE ID = :id"

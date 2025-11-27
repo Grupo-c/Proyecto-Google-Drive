@@ -3,7 +3,6 @@ from typing import Optional
 from datetime import date, datetime
 import re
 
-
 class Archivo(BaseModel):
     id: Optional[int] = Field(
         default=None, 
@@ -18,7 +17,6 @@ class Archivo(BaseModel):
     default=None,
     description="Icono asociado al archivo"
     )
-
 
     id_carpeta: Optional[int] = Field(
         description="Carpeta donde se almacena el archivo"

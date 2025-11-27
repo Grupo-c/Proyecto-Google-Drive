@@ -8,7 +8,6 @@ from utils.database import execute_query_json
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 async def get_one_spam(id_spam: int) -> Optional[dict]:
     sql = """
         SELECT
@@ -37,7 +36,6 @@ async def get_one_spam(id_spam: int) -> Optional[dict]:
         logger.error(f"Error al obtener spam {id_spam}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
 
-
 async def get_spam_by_usuario(id_usuario: int) -> List[dict]:
     sql = """
         SELECT
@@ -59,7 +57,6 @@ async def get_spam_by_usuario(id_usuario: int) -> List[dict]:
     except Exception as e:
         logger.error(f"Error al listar spam del usuario {id_usuario}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
 
 async def create_spam(spam: Spam) -> dict:
     sql = """
@@ -92,7 +89,6 @@ async def create_spam(spam: Spam) -> dict:
     except Exception as e:
         logger.error(f"Error al crear spam: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
 
 async def delete_spam(id_spam: int) -> None:
     sql = "DELETE FROM SPAM WHERE ID = :id"
