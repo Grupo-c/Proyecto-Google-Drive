@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 import re
 
@@ -21,10 +21,9 @@ class User(BaseModel):
         pattern=r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
         examples=["usuario@example.com"]
     )
-    id_pais: int = Field(alias="ID_PAIS", description="ID del país del usuario")
-   
+    id_pais: int = Field(
+        alias="ID_PAIS", 
+        description="ID del país del usuario")
     foto: Optional[str] = Field(
-        default=None, 
-        alias="FOTO", 
+        default=None, alias="FOTO", 
         description="URL")
-
