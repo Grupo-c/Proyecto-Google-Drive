@@ -1,28 +1,51 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
-from datetime import datetime
+from datetime import date, datetime
+import re
 
 
-class Papelera(BaseModel):
-    id_papelera: int = Field(..., alias="ID_PAPELERA", description="ID de la entrada en la papelera")
+class Archivo(BaseModel):
+    id: Optional[int] = Field(
+        default=None, 
+        description="ID del archivo"
+    )
+    
+    id_propietario: int = Field(
+        description="Usuario propietario del archivo"
+    )
 
-    nombre_usuario: Optional[str] = Field(None, alias="NOMBRE_USUARIO", description="Nombre del usuario propietario")
+    id_carpeta: Optional[int] = Field(
+        description="Carpeta donde se almacena el archivo"
+    )
 
-    nombre_carpeta: Optional[str] = Field(None, alias="NOMBRE_CARPETA", description="Nombre de la carpeta si aplica")
+    nombre: str = Field(
+        description="Nombre del archivo", 
+        examples=["informe.pdf"]
+    )
 
-    nombre_archivo: Optional[str] = Field(None, alias="NOMBRE_ARCHIVO", description="Nombre del archivo si aplica")
+    tipo: str = Field(
+        description="Tipo MIME o extensión", 
+        examples=["PDF", "DOCX"]
+    )
 
-    tipo_archivo: Optional[str] = Field(None, alias="TIPO_ARCHIVO", description="Tipo/extension del archivo")
+    tamaño: float = Field(
+        description="Tamaño del archivo en MB", 
+        examples=[5.2]
+    )
 
-    tamano_archivo: Optional[str] = Field(None, alias="TAMANO_ARCHIVO", description="Tamaño legible del archivo (ej: '500 MB')")
+    fecha_creacion: date = Field(
+        description="Fecha de creación"
+    )
 
-    url_archivo: Optional[str] = Field(None, alias="URL_ARCHIVO", description="URL o ruta del archivo")
+    fecha_modificacion: date = Field(
+        description="Fecha de modificación"
+    )
 
-    fecha_agregado: Optional[datetime] = Field(None, alias="FECHA_AGREGADO", description="Fecha en que se movió a la papelera")
+    url: str = Field(
+        description="Ruta o URL donde se almacena el archivo"
+    )
 
-    fecha_eliminacion: Optional[datetime] = Field(None, alias="FECHA_ELIMINACION", description="Fecha prevista de eliminación permanente")
-
-    class Config:
-        allow_population_by_field_name = True
-        orm_mode = True
-        description = "Fecha en la que se metio el archivo en la papelera"
+    visibilidad: Optional[bool] = Field(
+        default=True, 
+        description="Archivo público o privado"
+    )
