@@ -19,7 +19,9 @@ from routes.icono import router as icono_router
 from routes.membresia import router as memebresia_router
 from routes.papelera import router as papelera_router
 from routes.spam import router as spam_router
-from routes.permiso import router as permiso_router
+from routes.tipo_permiso import router as tipo_permiso_router
+from routes.permiso_archivo import router as permiso_archivo_router
+from routes.permiso_carpetas import router as permiso_carpetas_router
 
 app.include_router(usuario_router)
 app.include_router(archivo_router)
@@ -33,7 +35,9 @@ app.include_router(icono_router)
 app.include_router(memebresia_router)
 app.include_router(papelera_router)
 app.include_router(spam_router)
-app.include_router(permiso_router)
+app.include_router(tipo_permiso_router)
+app.include_router(permiso_archivo_router)
+app.include_router(permiso_carpetas_router)
 
 SQL_USERNAME = os.getenv("SQL_USERNAME")
 SQL_PASSWORD = os.getenv("SQL_PASSWORD")
