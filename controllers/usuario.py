@@ -10,12 +10,12 @@ logger = logging.getLogger(__name__)
 async def get_one_user(id: int) -> User:
     sql = """
         SELECT 
-            U.ID AS id,
-            U.NOMBRE AS nombre,
-            U.APELLIDO AS apellido,
-            U.CORREO AS correo,
-            U.ID_PAIS AS id_pais,
-            U.FOTO AS foto
+            U.ID AS ID,
+            U.NOMBRE AS NOMBRE,
+            U.APELLIDO AS APELLIDO,
+            U.CORREO AS CORREO,
+            U.ID_PAIS AS ID_PAIS,
+            U.FOTO AS FOTO
         FROM USUARIO U
         WHERE U.ID = :id
     """
@@ -31,12 +31,12 @@ async def get_one_user(id: int) -> User:
 async def get_all_users() -> list[User]:
     sql = """
         SELECT 
-            U.ID AS id,
-            U.NOMBRE AS nombre,
-            U.APELLIDO AS apellido,
-            U.CORREO AS correo,
-            U.ID_PAIS AS id_pais,
-            U.FOTO AS foto
+            U.ID AS ID,
+            U.NOMBRE AS NOMBRE,
+            U.APELLIDO AS APELLIDO,
+            U.CORREO AS CORREO,
+            U.ID_PAIS AS ID_PAIS,
+            U.FOTO AS FOTO
         FROM USUARIO U
     """
     try:
