@@ -1,6 +1,12 @@
 from fastapi import APIRouter, status
 from models.comentarios import Comentario
-from controllers.comentarios import get_all_comments, get_one_comment, create_comment, update_comment, delete_comment
+from controllers.comentarios import (
+    get_all_comments,
+    get_one_comment,
+    create_comment,
+    update_comment,
+    delete_comment
+)
 
 router = APIRouter(prefix="/comentarios")
 
