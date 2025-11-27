@@ -1,20 +1,15 @@
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from typing import Optional
-import re
 
 class Membresia(BaseModel):
-    id_membresia: int = Field(
-        alias = "ID",
-        description = "ID de la membresia"
-    )
-
+    id: Optional[int] = Field(
+        default=None
+        )
+    
     nombre: str = Field(
-        alias= "NOMBRE",
-        description = "Nombre de la membresia"
+        description="Nombre de la membresia"
     )
-
+    
     precio: float = Field(
-        alias= "PRECIO",
-        description = "Precio de la membresia"
+        description="Precio de la membresia"
     )

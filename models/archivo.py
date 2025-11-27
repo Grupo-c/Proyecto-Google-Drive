@@ -57,4 +57,24 @@ class Archivo(BaseModel):
         default=True, 
         description="Archivo público o privado"
     )
-    
+
+class ArchivoUpdate(BaseModel):
+    id: Optional[int] = Field(
+        default=None,
+        description="ID del archivo a actualizar"
+    )
+
+    id_carpeta: Optional[int] = Field(
+        default=None,
+        description="Carpeta donde se almacena el archivo"
+    )
+
+    nombre: Optional[str] = Field(
+        default=None,
+        description="Nombre del archivo"
+    )
+
+    tamaño: Optional[float] = Field(
+        default=None,
+        description="Tamaño del archivo en MB"
+    )

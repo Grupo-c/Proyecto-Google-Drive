@@ -1,8 +1,10 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 class ArchivosPermiso(BaseModel):
-    id_usuario: int = Field(
-        description = "ID del usuario que da el permiso"
+    id: Optional[int] = Field(
+        default=None,
+        description="ID del permiso de archivo"
     )
     
     id_archivo: int = Field(

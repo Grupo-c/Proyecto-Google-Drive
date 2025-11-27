@@ -8,15 +8,18 @@ class Unidad(BaseModel):
         description="ID de la unidad asociada (autogenerado)"
         )
     
-    id_usuario: int = Field(
+    id_usuario: Optional[int] = Field(
+        default=None,
         description="ID del usuario que le pertenece la unidad"
         )
     
-    capacidad_total: float = Field(
+    capacidad_total: Optional[float] = Field(
+        default=None,
         description="Capacidad total de la unidad"
         )
     
-    capacidad_actual: float = Field(
+    capacidad_actual: Optional[float] = Field(
+        default=None,
         description="Capacidad actualmente usada en la unidad"
         )
 
@@ -33,3 +36,13 @@ class Unidad(BaseModel):
         default=None, 
         description="Fecha de expiración de la membresía"
         )
+
+class UnidadUpdate(BaseModel):
+    id: Optional[int] = Field(
+        default=None,
+        description="ID de la unidad a actualizar"
+    )
+
+    id_membresia: int = Field(
+        description="Nuevo ID de la membresía asignada a la unidad"
+    )

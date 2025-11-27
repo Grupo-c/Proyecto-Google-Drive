@@ -5,7 +5,8 @@ from datetime import date
 class Comentario(BaseModel):
     id: Optional[int] = Field(
         default=None,
-        description="ID del comentario"
+        description="ID del comentario",
+        exclude=True
     )
 
     id_usuario: int = Field(

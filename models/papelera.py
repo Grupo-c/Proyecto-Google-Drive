@@ -28,17 +28,20 @@ class Papelera(BaseModel):
         examples=["PDF", "DOCX"]
     )
 
-    tamaño: float = Field(
+    tamaño: Optional[float] = Field(
         description="Tamaño del archivo en MB", 
-        examples=[5.2]
+        examples=[5.2],
+        default=None
     )
 
-    fecha_creacion: date = Field(
+    fecha_creacion: Optional[datetime] = Field(
+        default=None,
         description="Fecha de creación"
     )
 
-    fecha_modificacion: date = Field(
-        description="Fecha de modificación"
+    fecha_modificacion: Optional[datetime] = Field(
+        description="Fecha de modificación",
+        default=None
     )
 
     url: str = Field(

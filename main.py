@@ -22,6 +22,7 @@ from routes.spam import router as spam_router
 from routes.tipo_permiso import router as tipo_permiso_router
 from routes.permiso_archivo import router as permiso_archivo_router
 from routes.permiso_carpetas import router as permiso_carpetas_router
+from routes.pais import router as pais_router
 
 app.include_router(usuario_router)
 app.include_router(archivo_router)
@@ -38,6 +39,7 @@ app.include_router(spam_router)
 app.include_router(tipo_permiso_router)
 app.include_router(permiso_archivo_router)
 app.include_router(permiso_carpetas_router)
+app.include_router(pais_router)
 
 SQL_USERNAME = os.getenv("SQL_USERNAME")
 SQL_PASSWORD = os.getenv("SQL_PASSWORD")

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 
-from models.archivo import Archivo
+from models.archivo import Archivo,ArchivoUpdate
 from controllers.archivo import (
     create_file,
     update_file,
@@ -24,9 +24,9 @@ async def create_new_archivo(archivo_data: Archivo):
     return result
 
 
-@router.put("/{id}", tags=["Archivos"], status_code=status.HTTP_201_CREATED)
-async def update_archivo_info(archivo_data: Archivo, id: int):
-    archivo_data.id = id
+@router.put("/{id}", tags=["Archivos"], status_code=status.HTTP_200_OK)
+async def update_archivo_info(id: int, archivo_data: ArchivoUpdate):
+    archivo_data.id = id  
     result = await update_file(archivo_data)
     return result
 

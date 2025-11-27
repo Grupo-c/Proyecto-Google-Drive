@@ -1,14 +1,14 @@
 from pydantic import BaseModel, Field
+from typing import Optional
 
 class FoldersPermiso(BaseModel):
-    id_usuario: int = Field(
-        description = "ID del usuario que da el permiso"
+    id: Optional[int] = Field(
+        default=None,
+        description="ID del folder_permiso"
     ) 
-    
-    id_folder: int = Field(
-        description = "ID del folder que se da el permis"
+    id_carpeta: int = Field(
+        description="ID del folder al que se da el permiso"
     )
-    
     id_permiso: int = Field(
-        description = "ID del permiso otorgado"
+        description="ID del permiso otorgado"
     )

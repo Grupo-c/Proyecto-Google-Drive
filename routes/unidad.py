@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status
-from models.unidad import Unidad
+from models.unidad import Unidad, UnidadUpdate
 from controllers.unidad import (
     create_unidad, update_unidad, delete_unidad,
     get_all_unidades, get_one_unidad
@@ -15,8 +15,9 @@ async def get_all_unidades_route():
 async def create_new_unidad(unidad_data: Unidad):
     return await create_unidad(unidad_data)
 
+
 @router.put("/{id}", tags=["Unidades"], status_code=status.HTTP_200_OK)
-async def update_unidad_route(unidad_data: Unidad, id: int):
+async def update_unidad_route(id: int, unidad_data: UnidadUpdate):
     unidad_data.id = id
     return await update_unidad(unidad_data)
 

@@ -1,6 +1,6 @@
 import json
 from fastapi import HTTPException
-from models.archivo import Archivo
+from models.archivo import Archivo, ArchivoUpdate
 from utils.database import execute_query_json
 
 
@@ -63,23 +63,34 @@ async def get_all_files() -> list[Archivo]:
 
 async def delete_file(id: int) -> str:
     try:
-        # Borrar hijos primero
-        sql_cleanup = """
-        BEGIN
-            DELETE FROM FAVORITOS WHERE ID_ARCHIVO = :id;
-            DELETE FROM SPAM WHERE ID_ARCHIVO = :id;
-            DELETE FROM COMPARTIDOS WHERE ID_ARCHIVO = :id;
-        END;
+        sql_info = """
+        SELECT ID_USUARIO, ID_CARPETA, TAMANO 
+        FROM ARCHIVO 
+        WHERE ID = :id
         """
-        await execute_query_json(sql_cleanup, {"id": id}, needs_commit=True)
+        archivo = await execute_query_json(sql_info, {"id": id})
 
-        # Borrar archivo
-        sql_delete = "DELETE FROM ARCHIVO WHERE ID = :id"
-        await execute_query_json(sql_delete, {"id": id}, needs_commit=True)
+        if not archivo:
+            raise HTTPException(status_code=404, detail="Archivo no encontrado")
 
-        return f"Archivo con id {id} eliminado correctamente."
+        archivo = archivo[0]
+
+        sql_papelera = """
+        INSERT INTO PAPELERA (ID_USUARIO, ID_CARPETA, ID_ARCHIVO, TAMANO)
+        VALUES (:id_usuario, :id_carpeta, :id_archivo, :tamano)
+        """
+        await execute_query_json(sql_papelera, {
+            "id_usuario": archivo["ID_USUARIO"],
+            "id_carpeta": archivo["ID_CARPETA"],
+            "id_archivo": id,
+            "tamano": archivo["TAMANO"]
+        }, needs_commit=True)
+
+        return f"Archivo con id {id} movido a PAPELERA correctamente."
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
+
 
 
 async def create_file(file: Archivo) -> Archivo:
@@ -114,12 +125,22 @@ async def create_file(file: Archivo) -> Archivo:
 
 
 
-async def update_file(file: Archivo) -> Archivo:
+async def update_file(file: ArchivoUpdate) -> dict:
     data = file.model_dump(exclude_none=True)
     keys = [k for k in data if k != "id"]
 
-    set_clause = ", ".join([f"{k} = :{k}" for k in keys])
+    if not keys:
+        sql_find = "SELECT * FROM ARCHIVO WHERE ID = :id"
+        result = await execute_query_json(sql_find, {"id": file.id})
+        return result[0] if result else None
+
+    field_map = {
+        "tamaño": "TAMANO"
+    }
+
+    set_clause = ", ".join([f"{field_map.get(k, k)} = :{k}" for k in keys])
     sql = f"UPDATE ARCHIVO SET {set_clause} WHERE ID = :id"
+
     params = {k: data[k] for k in keys}
     params["id"] = file.id
 
@@ -127,7 +148,6 @@ async def update_file(file: Archivo) -> Archivo:
         await execute_query_json(sql, params, needs_commit=True)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}") from e
-
 
     sql_find = "SELECT * FROM ARCHIVO WHERE ID = :id"
     try:

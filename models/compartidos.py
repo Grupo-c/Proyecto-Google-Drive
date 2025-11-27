@@ -4,7 +4,8 @@ from typing import Optional
 class Compartido(BaseModel):
     id: Optional[int] = Field(
         default=None,
-        description="ID del registro de compartido"
+        description="ID del registro de compartido",
+        exclude=True
     )
     id_usuario: int = Field(
         description="Usuario que comparte"
